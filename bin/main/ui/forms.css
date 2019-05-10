@@ -1,0 +1,4 @@
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 0 0 5 0; /* its make really one-pixel-border */
+}
