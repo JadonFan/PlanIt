@@ -1,5 +1,6 @@
 package course;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,11 +14,14 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
-public class Course {
+public class Course implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int crsNo; // primary key
 	private String subject;
 	private short code;
 	private String name;
+	
 	private List<Assessment> assessments = Collections.synchronizedList(new ArrayList<>());
 	public static final String COURSE_IDENTIFIER_REGEX = "^([a-zA-Z]{2,})(\\d{3})$"; //$NON-NLS-1$
 	
@@ -76,7 +80,7 @@ public class Course {
 		for (Assessment astmt : this.assessments) {
 			Text astmtNameText = new Text(astmt.getName());
 			astmtNameText.setFont(Font.font("Verdana", FontWeight.BOLD, 13));
-			vb.getChildren().add(astmtNameText); // Set assessment name;
+			vb.getChildren().add(astmtNameText); // Set assessment name
 			
 			HBox hb = new HBox();
 			hb.setSpacing(10);

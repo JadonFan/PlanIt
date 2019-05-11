@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import abstractdao.CourseDao;
-import user.User;
+import user.Session;
 
 //Some dependency injection in this class would probably be nice...
 public class CourseDaoImpl implements CourseDao {	
@@ -35,7 +35,7 @@ public class CourseDaoImpl implements CourseDao {
 	@Override
 	public void loadCourses(Connection con) throws SQLException {
 		PreparedStatement pstmt = con.prepareStatement("SELECT * FROM my_courses WHERE student_id = ?"); //$NON-NLS-1$
-		pstmt.setInt(1, User.getStudentId());
+		pstmt.setInt(1, Session.getStudentId());
 		
 		this.courses.clear();
 		ResultSet resultSet = pstmt.executeQuery();
@@ -60,7 +60,7 @@ public class CourseDaoImpl implements CourseDao {
 		pstmt.setNString(2, crsDet.getSubject());
 		pstmt.setShort(3, crsDet.getCode());
 		pstmt.setNString(4, crsDet.getName());
-		pstmt.setInt(5, User.getStudentId());
+		pstmt.setInt(5, Session.getStudentId());
 				
 		this.courses.add(crsDet);
 		pstmt.execute();

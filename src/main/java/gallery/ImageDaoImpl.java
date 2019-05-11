@@ -16,7 +16,7 @@ import java.util.List;
 import abstractdao.ImageDao;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import user.User;
+import user.Session;
 
 public class ImageDaoImpl implements ImageDao {
 	private List<ImageView> imageViews;
@@ -43,7 +43,7 @@ public class ImageDaoImpl implements ImageDao {
 		
 		PreparedStatement pstmt = con.prepareStatement("INSERT INTO image_gallery VALUES(? , ?)");
 		pstmt.setNString(1, encodedBase64);
-		pstmt.setInt(2, User.getStudentId());
+		pstmt.setInt(2, Session.getStudentId());
 		
 		pstmt.execute();
 		this.imageViews.add(new ImageView(image));
@@ -55,7 +55,7 @@ public class ImageDaoImpl implements ImageDao {
 	@Override
 	public void loadImages(Connection con) throws SQLException {
 		PreparedStatement pstmt = con.prepareStatement("SELECT encoded_base_64 FROM image_gallery WHERE student_id = ?");
-		pstmt.setInt(1, User.getStudentId());
+		pstmt.setInt(1, Session.getStudentId());
 		ResultSet resultSet = pstmt.executeQuery();
 		
 		this.imageViews.clear();

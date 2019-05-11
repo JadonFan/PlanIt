@@ -120,7 +120,7 @@ public class MyCourses {
 		// TODO map to a specific resources directory that is packaged with the JAR file for this project, and allow the user
 		// to re-route the path of that directory
 		// final String plusImgPath = Paths.get(System.getProperty("user.dir")).toString().concat("src/main/java/resources/add.png");
-		ImageView plusImgView = new ImageView(new Image(getClass().getResourceAsStream("add.png"))); //$NON-NLS-1$
+		ImageView plusImgView = new ImageView(new Image(getClass().getResourceAsStream("/add.png"))); //$NON-NLS-1$
 		plusImgView.setFitHeight(20);
 		plusImgView.setFitWidth(20);
 		
@@ -136,7 +136,7 @@ public class MyCourses {
 		// TODO map to a specific resources directory that is packaged with the JAR file for this project, and allow the user
 		// to re-route the path of that directory
 		// final String flowImgPath = Paths.get(System.getProperty("user.dir")).toString().concat("src/main/java/resources/workflow.png");
-		ImageView workflowImgView = new ImageView(new Image(getClass().getResourceAsStream("workflow.png"))); //$NON-NLS-1$
+		ImageView workflowImgView = new ImageView(new Image(getClass().getResourceAsStream("/workflow.png"))); //$NON-NLS-1$
 		workflowImgView.setFitHeight(20);
 		workflowImgView.setFitWidth(20);
 		

@@ -21,7 +21,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import user.User;
+import user.Session;
 
 public class AssessmentWorkflow extends Graph<Course> {
 	private MyCourses myCourses;
@@ -127,7 +127,7 @@ public class AssessmentWorkflow extends Graph<Course> {
 		pstmt.setNString(3, distances.substring(0, distances.length() - 1));
 		
 		// Associated student ID
-		pstmt.setInt(4, User.getStudentId());
+		pstmt.setInt(4, Session.getStudentId());
 
 		pstmt.executeUpdate();
 		pstmt.close();
@@ -136,7 +136,7 @@ public class AssessmentWorkflow extends Graph<Course> {
 	
 	public void loadWorkflowGraph(Connection con) throws SQLException {
 		PreparedStatement pstmt = con.prepareStatement("SELECT * FROM astmt_workflow WHERE student_id = ? AND is_active = 'Y'");
-		pstmt.setInt(1, User.getStudentId());
+		pstmt.setInt(1, Session.getStudentId());
 		
 		ResultSet resultSet = pstmt.executeQuery();
 		// A sad O(n^3) algorithm...

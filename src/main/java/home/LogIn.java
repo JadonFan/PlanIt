@@ -4,8 +4,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import alerts.ErrorBox;
-import application.WindowManager;
 import application.PlannerDb;
+import application.WindowManager;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -95,6 +95,7 @@ public class LogIn extends Application {
 		System.out.println(">> The application has been launched.");
 		
 		try {
+			// PlannerDb.setEntityManagerFactory(Persistence.createEntityManagerFactory("Planner"));
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 			PlannerDb.setConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/planner?useUnicode="
 					+ "true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "uright123")); //$NON-NLS-1$

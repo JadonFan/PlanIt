@@ -5,10 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.mindrot.jbcrypt.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import abstractdao.LogInDao;
-import user.User;
+import user.Session;
 
 /*package-private*/ class LogInDaoImpl implements LogInDao {
 	public LogInDaoImpl() { }
@@ -18,6 +18,28 @@ import user.User;
 		return BCrypt.hashpw(unhashedPassword, BCrypt.gensalt());
 	}
 
+	
+	/*
+	public void registerUser(EntityManagerFactory emf, final int studentId, final String username, final String unhashedPassword) 
+			throws SQLException {
+		EntityManager entityManager = emf.createEntityManager();
+		EntityTransaction entityTransaction = null;
+		try {
+			entityTransaction = entityManager.getTransaction();
+			entityTransaction.begin();
+			User user = new User(studentId, username, this.hashPassword(unhashedPassword));
+			entityManager.persist(user);
+			entityTransaction.commit();
+		} catch (HibernateException e) {
+			if (entityTransaction != null) {
+				entityTransaction.rollback();
+			}
+			e.printStackTrace();
+		} finally {
+			entityManager.close();
+		}
+	}
+	*/
 	
 	@Override
 	public boolean registerUser(Connection con, final int studentId, final String username, final String unhashedPassword) 
@@ -42,7 +64,7 @@ import user.User;
 		boolean isCorrectCredential = false;
 		if (resultSet.next()) {
 			String hashedPassword = resultSet.getNString(1);
-			User.setStudentId(resultSet.getInt(2));
+			Session.setStudentId(resultSet.getInt(2));
 			isCorrectCredential = BCrypt.checkpw(unhashedPassword, hashedPassword);
 		}
 		

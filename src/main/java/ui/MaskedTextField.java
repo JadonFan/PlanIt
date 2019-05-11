@@ -50,7 +50,7 @@ public class MaskedTextField extends TextField {
 
 	
 	protected void maskEditableTextField() {
-		super.getStylesheets().add(getClass().getResource("editabletext.css").toExternalForm());
+		super.getStylesheets().add(getClass().getResource("/editabletext.css").toExternalForm()); //$NON-NLS-1$
 	}
 	
 	
