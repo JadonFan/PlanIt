@@ -5,7 +5,7 @@ import java.util.Calendar;
 import javafx.scene.paint.Color;
 
 public class Assignment extends Assessment {
-	private boolean isGroupProject = false;
+	private boolean isGroupProject = false; // set to false by default for now
 	private AssignmentRequirements req;
 	
 	
