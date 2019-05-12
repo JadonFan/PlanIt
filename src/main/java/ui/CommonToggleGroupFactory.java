@@ -1,30 +1,29 @@
 package ui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 
 public final class CommonToggleGroupFactory {
-	public static Pair<VBox, RadioButton[]> buildStdRadioGrp(ToggleGroup group, String[] radioOptionTexts) {
-		VBox vb = new VBox();
-		vb.setSpacing(10);
-		vb.setPadding(new Insets(15, 15, 0, 15));
+	public static Pair<GridPane, RadioButton[]> buildStdRadioGrp(ToggleGroup group, String[] radioOptionTexts) {
+		GridPane gridPane = new GridPane();
+		gridPane.setVgap(10);
+		gridPane.setPadding(new Insets(15));
+		gridPane.setAlignment(Pos.CENTER);
 		
 		RadioButton[] radioButtons = new RadioButton[radioOptionTexts.length];
+		int index = 0;
 		
-		for (int index = 0; index < radioOptionTexts.length; index++) {
+		for (; index < radioOptionTexts.length; index++) {
 			RadioButton rb = new RadioButton(radioOptionTexts[index]);
 			rb.setToggleGroup(group);
 			radioButtons[index] = rb;
-			vb.getChildren().add(rb);
+			gridPane.add(rb, 0, index);
 		}
 		
-		Separator separator = new Separator();
-		vb.getChildren().add(separator);
-		
-		return new Pair<>(vb, radioButtons);
+		return new Pair<>(gridPane, radioButtons);
 	}
 }

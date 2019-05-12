@@ -30,10 +30,10 @@ public class PlannerCalendar {
 		
 		// calendar filters
 		CheckBox vacationFilter = new CheckBox("Vacation");
-		CheckBox examFilter = new CheckBox("Exam");
 		CheckBox assignmentFilter = new CheckBox("Assignment");
 		CheckBox labFilter = new CheckBox("Lab");
-				
+		CheckBox examFilter = new CheckBox("Exam");
+
 		// calendar visual
 		GridPane calPane = calendarMonth.buildCalendarMonthPane();
 		ScrollPane calLayout = new ScrollPane(calPane);
@@ -43,8 +43,8 @@ public class PlannerCalendar {
 		// page layout
 		VBox pageLayout = new VBox(10);
 		pageLayout.setPadding(new Insets(25));
-		pageLayout.getChildren().addAll(CommonButtonFactory.buildBackToHomeButton(window),vacationFilter, examFilter, 
-				assignmentFilter, labFilter, this.buildCalTitleBox(window, calendarMonth), calLayout);
+		pageLayout.getChildren().addAll(CommonButtonFactory.buildBackToHomeButton(window), vacationFilter, assignmentFilter,  
+				labFilter, examFilter, this.buildCalTitleBox(window, calendarMonth), calLayout);
 		
 		Scene scene = new Scene(pageLayout);
 		window.setScene(scene);

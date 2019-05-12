@@ -9,18 +9,28 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ui.CoordinatesManager;
-import common.Graph;
 import application.PlannerDb;
+import common.Graph;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import ui.CommonTooltipFactory;
+import ui.CoordinatesManager;
 import user.Session;
 
 public class AssessmentWorkflow extends Graph<Course> {
@@ -53,7 +63,17 @@ public class AssessmentWorkflow extends Graph<Course> {
 
 	public void display(Stage window) {		
 		window.setTitle("Assessment Workflow");
+		 
+		VBox vb = new VBox();
+		vb.getChildren().add(this.buildTopBtnBox(window));
+		ScrollPane layout = new ScrollPane(vb);
+		layout.setFitToWidth(true);
+		layout.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		layout.setHbarPolicy(ScrollBarPolicy.NEVER);
+		layout.setStyle("-fx-background-color:transparent;");
+		
 		GridPane graphSheet = new GridPane();
+		vb.getChildren().add(graphSheet);
 		// CoordinatesManager.forceColsAndRows(graphSheet, 50, 50);
 		CoordinatesManager coordsManager = new CoordinatesManager(graphSheet);
 		
@@ -63,10 +83,8 @@ public class AssessmentWorkflow extends Graph<Course> {
 			// Set the vertices of the assessment workflow graph
 			for (Vertex<Course> vertex : super.getAdjacencyList()) {
 				StackPane stackPane = new StackPane();
-				
 				Text text = new Text(vertex.getElement().toString());
 				Circle node = new Circle();
-				
 				stackPane.getChildren().addAll(node, text);
 				
 				Pair<Number, Number> rCoords = coordsManager.getRandomUniqueCoordinates();
@@ -98,9 +116,64 @@ public class AssessmentWorkflow extends Graph<Course> {
 			e.printStackTrace();
 		}
 		
-		Scene scene = new Scene(graphSheet);
+		Scene scene = new Scene(layout);
 		window.setScene(scene);
 		window.show();
+	}
+	
+	
+	private HBox buildTopBtnBox(Stage window) {
+		HBox btnTopBarBox = new HBox();
+		btnTopBarBox.setSpacing(10);
+		btnTopBarBox.setPadding(new Insets(10));
+		btnTopBarBox.setMinWidth(window.getWidth());
+		// btnTopBarBox.setMaxWidth(this.window.getWidth());
+		btnTopBarBox.setStyle("-fx-background-color:#90EE90;");
+		
+		// "Add workflow assessment" button
+		ImageView plusImgView = new ImageView(new Image(getClass().getResourceAsStream("/add.png"))); //$NON-NLS-1$
+		plusImgView.setFitHeight(20);
+		plusImgView.setFitWidth(20);
+		
+		Button addAstmtBtn = new Button("Add"); 
+		addAstmtBtn.setGraphic(plusImgView);
+		addAstmtBtn.setMinWidth(100);
+		addAstmtBtn.setMaxWidth(100);
+		addAstmtBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Add an assessment to the workflow"));
+		// addAstmtBtn.setOnAction(event -> courseForm.display(this));
+		btnTopBarBox.getChildren().add(addAstmtBtn);
+		
+		// "Remove workflow assessment" button
+		ImageView minusImgView = new ImageView(new Image(getClass().getResourceAsStream("/minus.png"))); //$NON-NLS-1$
+		minusImgView.setFitHeight(20);
+		minusImgView.setFitWidth(20);
+		
+		Button removeAstmtBtn = new Button("Remove"); 
+		removeAstmtBtn.setGraphic(minusImgView);
+		removeAstmtBtn.setMinWidth(100);
+		removeAstmtBtn.setMaxWidth(100);
+		removeAstmtBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Remove an assessment from the workflow"));
+		// removeAstmtBtn.setOnAction(event -> courseForm.display(this));
+		btnTopBarBox.getChildren().add(removeAstmtBtn);
+	
+		Pane spacer = new Pane();
+		spacer.setPrefSize(50, 1);
+		btnTopBarBox.getChildren().add(spacer);
+		
+		// "Show my courses" button
+		ImageView coursesImgView = new ImageView(new Image(getClass().getResourceAsStream("/books.png"))); //$NON-NLS-1$
+		coursesImgView.setFitHeight(20);
+		coursesImgView.setFitWidth(20);
+		
+		Button coursesBtn = new Button("Courses"); 
+		coursesBtn.setGraphic(coursesImgView);
+		coursesBtn.setMinWidth(100);
+		coursesBtn.setMaxWidth(100);
+		coursesBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Show my current courses"));
+		coursesBtn.setOnAction(event -> MyCourses.getInstance().display(true));		
+		btnTopBarBox.getChildren().add(coursesBtn);
+		
+		return btnTopBarBox;
 	}
 	
 	

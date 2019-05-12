@@ -11,5 +11,5 @@ public interface AssessmentDao {
 	
 	void loadAssessments(Connection con) throws SQLException;
 	
-	void removeAssessment(Connection con, Assessment astmt) throws SQLException;
+	void deleteAssessment(Connection con, Assessment astmt) throws SQLException;
 }

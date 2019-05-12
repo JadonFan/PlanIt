@@ -75,13 +75,13 @@ public class CoordinatesManager {
 
 		do {
 			if (this.pane instanceof GridPane) {
-				columnIndex = new Random().nextInt(((GridPane) this.pane).getColumnCount());
-				rowIndex = new Random().nextInt(((GridPane) this.pane).getRowCount());
+				columnIndex = new Random().nextInt(((GridPane) this.pane).getColumnCount() + 1);
+				rowIndex = new Random().nextInt(((GridPane) this.pane).getRowCount() + 1);
 			} else {
 				columnIndex = new Random().nextDouble() * this.pane.getHeight();
 				rowIndex = new Random().nextDouble() * this.pane.getWidth();
 			}
-		} while (isOccupiedCoords(columnIndex, rowIndex));
+		} while (this.isOccupiedCoords(columnIndex, rowIndex));
 		
 		Pair<Number, Number> rCoords = new Pair<Number, Number>(columnIndex, rowIndex);
 		this.takenCoords.add(rCoords);

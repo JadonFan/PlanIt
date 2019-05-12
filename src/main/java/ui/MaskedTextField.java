@@ -12,8 +12,8 @@ import javafx.scene.text.Text;
 import utility.CommonUtils;
 
 /**
- * Essentially skins the text field to look like (that is, avoid the special default styles of a JavaFX text field)
- * and act like nothing more than editable text that is restricted to just a single line 
+ * Essentially skins the text field to create an <strong>editable</strong> text field that is restricted 
+ * to just a single line, and <em>without</em> the special default styles set by the JavaFX library
  * @author Jadon
  */
 public class MaskedTextField extends TextField {

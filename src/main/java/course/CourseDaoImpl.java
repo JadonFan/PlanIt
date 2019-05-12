@@ -59,7 +59,7 @@ public class CourseDaoImpl implements CourseDao {
 		pstmt.setInt(1, crsDet.getCrsNo());
 		pstmt.setNString(2, crsDet.getSubject());
 		pstmt.setShort(3, crsDet.getCode());
-		pstmt.setNString(4, crsDet.getName());
+		pstmt.setNString(4, crsDet.getTitle());
 		pstmt.setInt(5, Session.getStudentId());
 				
 		this.courses.add(crsDet);

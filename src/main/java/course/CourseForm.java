@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import alerts.ErrorBox;
@@ -30,23 +31,17 @@ public class CourseForm {
 	private boolean hasErroneousFields(TextField[] textFields) {
 		Set<TextField> erroneousFields = new HashSet<>();
 
-		// TODO in a separate method, change the border of a erroneous text field to red.
-		TextField crsCodeField = textFields[2];
-		if (!Pattern.matches("\\d{3}", crsCodeField.getText())) {
-			new ErrorBox("Invalid Input: The course code must be 3 digits long").display(); 
-			erroneousFields.add(crsCodeField);
-		} 
-		
+		// TODO in a separate method, change the border of a erroneous text field to red.		
 		TextField crsNoField = textFields[0];
 		if (CommonUtils.isEmptyOrNull(crsNoField.getText())) {
 			new ErrorBox("Invalid Input: The course number cannot be empty");
 			erroneousFields.add(crsNoField);
 		}
 		
-		TextField crsSubjectField = textFields[1];
-		if (CommonUtils.isEmptyOrNull(crsSubjectField.getText())) {
-			new ErrorBox("Invalid Input: The course subject cannot be empty");
-			erroneousFields.add(crsSubjectField);
+		TextField crsNameField = textFields[1];
+		if (!Pattern.matches(Course.COURSE_IDENTIFIER_REGEX, crsNameField.getText())) {
+			new ErrorBox("Invalid Input: The course name must be at least two letters followed by 3 digits");
+			erroneousFields.add(crsNameField);
 		}
 		
 		return erroneousFields.size() != 0;
@@ -54,8 +49,7 @@ public class CourseForm {
 	
 	
 	public void display(MyCourses myCourses) {
-		List<Label> labels = new ArrayList<>(List.of(new Label("Course Number:"), new Label("Subject:"), new Label("Course Code:"),
-				new Label("Course Title:")));
+		List<Label> labels = new ArrayList<>(List.of(new Label("Course Number:"), new Label("Course Name:"), new Label("Course Title:")));
 		Button doneButton = new Button("Done");
 		PopupForm popupForm = new PopupForm(labels, doneButton);
 		
@@ -70,15 +64,18 @@ public class CourseForm {
 			}
 			
 			int crsNo = Integer.parseInt(textFields[0].getText());
-			String crsSubject = textFields[1].getText();
-			short crsCode = Short.parseShort(textFields[2].getText()); 
-			String crsTitle = textFields[3].getText();
+			String crsTitle = textFields[2].getText();
+			
+			Matcher matcher = Pattern.compile(Course.COURSE_IDENTIFIER_REGEX).matcher(textFields[1].getText().trim());
+			matcher.matches();
+			String crsSubject = matcher.group(1);
+			short crsCode = Short.parseShort(matcher.group(2)); 
 			
 			try {
 				new CourseDaoImpl(myCourses.getCurrentCourses()).addCourse(PlannerDb.getConnection(), 
 						new Course(crsNo, crsSubject, crsCode, crsTitle));
 				new CourseDaoImpl(myCourses.getCurrentCourses()).loadCourses(PlannerDb.getConnection());
-			} catch (SQLIntegrityConstraintViolationException e) { // XXX better to use IntegrityConstraintViolationException in Spring?
+			} catch (SQLIntegrityConstraintViolationException e) { 
 				new ErrorBox("The course was already added!").display();
 				e.printStackTrace();
 			} catch (SQLException e) {
@@ -86,7 +83,7 @@ public class CourseForm {
 			}
 			
 			this.window.close();
-			myCourses.display();
+			myCourses.display(true);
 			event.consume();
 		});
 		

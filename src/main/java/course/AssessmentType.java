@@ -2,9 +2,9 @@ package course;
 
 public enum AssessmentType {
 	ASSIGNMENT(0),
-	EXAMINATION(1),
-	LAB(2), 
-	QUIZ(3)
+	LAB(1), 
+	QUIZ(2),
+	EXAMINATION(4),
 	;
 	
 	

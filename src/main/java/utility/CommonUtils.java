@@ -124,10 +124,12 @@ public final class CommonUtils {
 	 */
 	public static String englishizeWord(String str) {
 		String formattedWord = "";
+		int i = 1;
 		
 		formattedWord += Character.toUpperCase(str.charAt(0));
-		for (int i = 1; i < str.length(); i++) {
+		while (i < str.length()) {
 			formattedWord += Character.toLowerCase(str.charAt(i));
+			i++;
 		}
 		
 		return formattedWord;

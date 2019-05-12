@@ -83,7 +83,7 @@ public class AssessmentDaoImpl implements AssessmentDao {
 	
 	
 	@Override
-	public void removeAssessment(Connection con, Assessment astmt) throws SQLException {
+	public void deleteAssessment(Connection con, Assessment astmt) throws SQLException {
 		PreparedStatement pstmt = con.prepareStatement("DELETE FROM assessments WHERE astmt_id = ? and astmt_name = ?"); //$NON-NLS-1$
 		pstmt.setInt(1, astmt.getId());
 		pstmt.setNString(2, astmt.getName());
@@ -93,7 +93,4 @@ public class AssessmentDaoImpl implements AssessmentDao {
 		
 		pstmt.close();
 	}
-	
-	
-	
 }

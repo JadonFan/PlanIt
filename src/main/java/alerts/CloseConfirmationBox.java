@@ -16,6 +16,7 @@ import javafx.stage.Stage;
  * @deprecated Use the {@link ConfirmBox} class instead
  * @author jadon
  */
+@Deprecated
 public class CloseConfirmationBox extends AlertBox {	
 	private static boolean confirmClose;
 

@@ -13,6 +13,8 @@ import application.PlannerDb;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -28,14 +30,15 @@ import ui.CommonTooltipFactory;
 import ui.MaskedTextField;
 
 // TODO As part of code re-factoring, provide more consistency in how windows are transferred between classes
-// TODO split this class into two: one for DAO, one for UI
 public class MyCourses {
 	private static volatile MyCourses myCourses = null;
+	private Stage window;
 	private List<Course> currentCourses;
 	
 	
-	public MyCourses() {
+	private MyCourses() {
 		this.currentCourses = new ArrayList<>();
+		this.window = new Stage();
 	}
 	
 	public static MyCourses getInstance() {
@@ -66,60 +69,107 @@ public class MyCourses {
 	}
 	
 	
-	public void display() {
-		try {
-			display(new Stage());
-		} catch (SQLException e) {
-			e.printStackTrace();
+	// Using the last element of the "non-sorted" partition of the list as the pivot...
+	private int partitionForQuickSort(int low, int high) {
+		float pivotValue = this.currentCourses.get(high).getPriority();
+		int i = low - 1;
+		for (int j = low; j < high; j++) {
+			if (this.currentCourses.get(j).getPriority() > pivotValue) {	
+				i++;
+
+				Course temp = this.currentCourses.get(i);
+				this.currentCourses.set(i, this.currentCourses.get(j));
+				this.currentCourses.set(j, temp);
+			}
+		}
+		
+		Course temp = this.currentCourses.get(i + 1);
+		this.currentCourses.set(i + 1, this.currentCourses.get(high));
+		this.currentCourses.set(high, temp);
+		
+		return i + 1;
+	}
+	
+	
+	/**sortCoursesByAscPriority
+	 * Sort all the courses in this MyCourses object by <strong>DESCENDING</strong> priority 
+	 */
+	public void sortCoursesByDescPriority() {
+		this.sortCoursesByDescPriority(0, this.currentCourses.size() - 1);
+	}
+	
+	
+	/**
+	 * Sort some courses in this MyCourses object by <strong>DESCENDING</strong> priority 
+	 * @param low the lower bounded index in the list of courses to be stored
+	 * @param high the upper bounded index in the list of courses to be stored
+	 */
+	public void sortCoursesByDescPriority(int low, int high) {
+		if (low < high) {
+			int partitionIndex = this.partitionForQuickSort(low, high);
+			this.sortCoursesByDescPriority(low, partitionIndex - 1);
+			this.sortCoursesByDescPriority(partitionIndex + 1, high);
 		}
 	}
 	
 	
-	public void display(Stage window) throws SQLException {		
+	public void display(boolean reload) {		
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		final double goodWidthToDisplay = gd.getDisplayMode().getWidth() / 1.5;
-		window.setWidth(goodWidthToDisplay);
-		window.setMinWidth(goodWidthToDisplay); 
-		window.setMaxWidth(goodWidthToDisplay); 
-		window.setHeight(700);
-		window.setTitle("My Courses");
+		// this.window.setWidth(goodWidthToDisplay);
+		this.window.setMinWidth(goodWidthToDisplay); 
+		this.window.setMaxWidth(goodWidthToDisplay); 
+		this.window.setHeight(700);
+		this.window.setTitle("My Courses");
 		
 		CourseForm courseForm = new CourseForm();
+		CoursePrioritySelector coursePrioritySelector = new CoursePrioritySelector();
 		
 		VBox courseBox = new VBox();
 		courseBox.setSpacing(10);
-		
+		ScrollPane coursePane = new ScrollPane(courseBox);
+		coursePane.setFitToWidth(true);
+		coursePane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		coursePane.setHbarPolicy(ScrollBarPolicy.NEVER);
+		coursePane.setStyle("-fx-background-color:transparent;");
+
 		// *** Top button bar ***
-		courseBox.getChildren().add(this.buildTopBtnBox(courseForm, window));
+		courseBox.getChildren().add(this.buildTopBtnBox(courseForm, coursePrioritySelector));
 		
-		new CourseDaoImpl(this.currentCourses).loadCourses(PlannerDb.getConnection());
-		for (Course crsDet : this.getCurrentCourses()) { 
-			courseBox.getChildren().add(this.buildCourseInfoPane(crsDet, window));
+		try {
+			if (reload) {
+				new CourseDaoImpl(this.currentCourses).loadCourses(PlannerDb.getConnection());
+			}
+			for (Course crsDet : this.currentCourses) { 
+				courseBox.getChildren().add(this.buildCourseInfoPane(crsDet));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
-		Scene scene = new Scene(courseBox);
-		window.setScene(scene);
-		window.setOnCloseRequest(event -> {
+		Scene scene = new Scene(coursePane);
+		this.window.setScene(scene);
+		this.window.setOnCloseRequest(event -> {
 			if (courseForm.getWindow().isShowing()) {
 				courseForm.getWindow().close();
 			}
+			if (coursePrioritySelector.getWindow().isShowing()) {
+				coursePrioritySelector.getWindow().close();
+			}
 		});
-		window.show();
+		this.window.show();
 	}
 	
 	
-	private HBox buildTopBtnBox(CourseForm courseForm, Stage window) {
+	private HBox buildTopBtnBox(CourseForm courseForm, CoursePrioritySelector coursePrioritySelector) {
 		HBox btnTopBarBox = new HBox();
 		btnTopBarBox.setSpacing(10);
 		btnTopBarBox.setPadding(new Insets(10));
-		btnTopBarBox.setMaxWidth(window.getWidth());
+		btnTopBarBox.setMinWidth(this.window.getWidth());
+		// btnTopBarBox.setMaxWidth(this.window.getWidth());
 		btnTopBarBox.setStyle("-fx-background-color:#ADD8E6;");
 		
 		// "Add course" button
-		// TODO direct to res directory
-		// TODO map to a specific resources directory that is packaged with the JAR file for this project, and allow the user
-		// to re-route the path of that directory
-		// final String plusImgPath = Paths.get(System.getProperty("user.dir")).toString().concat("src/main/java/resources/add.png");
 		ImageView plusImgView = new ImageView(new Image(getClass().getResourceAsStream("/add.png"))); //$NON-NLS-1$
 		plusImgView.setFitHeight(20);
 		plusImgView.setFitWidth(20);
@@ -132,10 +182,24 @@ public class MyCourses {
 		addCourseBtn.setOnAction(event -> courseForm.display(this));
 		btnTopBarBox.getChildren().add(addCourseBtn);
 		
+		// "Sort courses" button
+		ImageView sortImgView = new ImageView(new Image(getClass().getResourceAsStream("/sort.png"))); //$NON-NLS-1$
+		sortImgView.setFitHeight(20);
+		sortImgView.setFitWidth(20);
+		
+		Button sortBtn = new Button("Sort"); 
+		sortBtn.setGraphic(sortImgView);
+		sortBtn.setMinWidth(100);
+		sortBtn.setMaxWidth(100);
+		sortBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Sort my courses by priority"));
+		sortBtn.setOnAction(event -> coursePrioritySelector.displaySelectorScreen(this));		
+		btnTopBarBox.getChildren().add(sortBtn);
+		
+		Pane spacer = new Pane();
+		spacer.setPrefSize(50, 1);
+		btnTopBarBox.getChildren().add(spacer);
+		
 		// "Show assessment workflow" button
-		// TODO map to a specific resources directory that is packaged with the JAR file for this project, and allow the user
-		// to re-route the path of that directory
-		// final String flowImgPath = Paths.get(System.getProperty("user.dir")).toString().concat("src/main/java/resources/workflow.png");
 		ImageView workflowImgView = new ImageView(new Image(getClass().getResourceAsStream("/workflow.png"))); //$NON-NLS-1$
 		workflowImgView.setFitHeight(20);
 		workflowImgView.setFitWidth(20);
@@ -144,15 +208,15 @@ public class MyCourses {
 		workflowBtn.setGraphic(workflowImgView);
 		workflowBtn.setMinWidth(100);
 		workflowBtn.setMaxWidth(100);
-		workflowBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Show the workflow for the assessments"));
-		workflowBtn.setOnAction(event -> new AssessmentWorkflow(this).display(window));		
+		workflowBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Show the workflow for my ongoing assessments"));
+		workflowBtn.setOnAction(event -> new AssessmentWorkflow(this).display(this.window));		
 		btnTopBarBox.getChildren().add(workflowBtn);
 		
 		return btnTopBarBox;
 	}
 	
 	
-	private StackPane buildCourseInfoPane(Course crsDet, Stage window) throws SQLException {
+	private StackPane buildCourseInfoPane(Course crsDet) throws SQLException {
 		new AssessmentDaoImpl(crsDet).loadAssessments(PlannerDb.getConnection());
 
 		MaskedTextField crsText = new MaskedTextField(crsDet.toString(), Font.font("Times New Roman", FontWeight.BOLD, 32));
@@ -166,7 +230,7 @@ public class MyCourses {
 		Predicate<String> isProperFormat = str -> Pattern.matches(Course.COURSE_IDENTIFIER_REGEX, str);
 		crsText.configEditActions(isProperFormat, onEnterFunc);
 		Rectangle rect = new Rectangle();
-		rect.setWidth(window.getWidth() - 200);
+		rect.setWidth(this.window.getWidth() - 200);
 		
 		Button addAstmtBtn = new Button("Add Astmt");
 		addAstmtBtn.setOnAction(event -> {
@@ -184,8 +248,7 @@ public class MyCourses {
 		deleteCourseBtn.setOnAction(event -> {
 			try {
 				new CourseDaoImpl(this.currentCourses).deleteCourse(PlannerDb.getConnection(), crsDet);
-				new CourseDaoImpl(this.currentCourses).loadCourses(PlannerDb.getConnection());
-				this.display(window);
+				this.display(true);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

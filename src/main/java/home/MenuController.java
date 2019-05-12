@@ -17,7 +17,7 @@ public class MenuController {
 	
 	@FXML
 	public void loadCourses() {
-		MyCourses.getInstance().display();
+		MyCourses.getInstance().display(true);
 	}
 	
 	@FXML

@@ -11,7 +11,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-// TODO combine with the closeConfirmationBox class
 public class ConfirmBox extends AlertBox {
 	private String boxTitle;
 	private String boxText;

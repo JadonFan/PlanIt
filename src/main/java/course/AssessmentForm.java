@@ -24,9 +24,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import ui.CommonToggleGroupFactory;
@@ -104,13 +106,20 @@ public class AssessmentForm {
 		Button doneButton = new Button("Done");
 		PopupForm popupForm = new PopupForm(this.labels, doneButton);
 		
-		ToggleGroup group = new ToggleGroup();
+		Text selectToggleText = new Text("1. Select the type of assessment");
+		popupForm.getFormBox().getChildren().add(selectToggleText);
+		
+;		ToggleGroup group = new ToggleGroup();
 		group.selectedToggleProperty().addListener((change, oldToggle, currToggle) -> {
 			AssessmentType astmtType = AssessmentType.valueOf(((RadioButton) currToggle).getText()); 
 			AssessmentForm.disableUnusedFields(this.labelMap.getOrDefault(astmtType, null), this.labels, popupForm.getTextFields());
 		});
-		Pair<VBox, RadioButton[]> astmtTypeBtns = CommonToggleGroupFactory.buildStdRadioGrp(group, AssessmentType.reprAllAstmtTypes());
+		Pair<GridPane, RadioButton[]> astmtTypeBtns = CommonToggleGroupFactory.buildStdRadioGrp(group, AssessmentType.reprAllAstmtTypes());
+		popupForm.getFormBox().getChildren().add(astmtTypeBtns.getKey());
 		
+		Separator separator = new Separator();
+		Text enterValueText = new Text("2. Enter the details for this assessment");
+		popupForm.getFormBox().getChildren().addAll(separator, enterValueText);
 		
 		// *** TODO use a separate method and not the popup form class ***
 		Label dateLbl = new Label("Date");
@@ -122,7 +131,6 @@ public class AssessmentForm {
 		extraControls.add(new Pair<>(dateLbl, datePicker));
 		extraControls.add(new Pair<>(timeLbl, timePicker));
 		
-		popupForm.getFormBox().getChildren().addAll(astmtTypeBtns.getKey());
 		popupForm.mapLayout(this.window, extraControls);
 		this.window.setWidth(400);
 		// ****************************************************************
@@ -153,7 +161,7 @@ public class AssessmentForm {
 				new AssessmentDaoImpl(course).addAssessment(PlannerDb.getConnection(), new java.sql.Timestamp(dueDate.getTime()), 
 						new Assignment(astmtName, jCalDueDate, astmtWeight));
 				new AssessmentDaoImpl(course).loadAssessments(PlannerDb.getConnection());
-			} catch (SQLIntegrityConstraintViolationException e) { // XXX better to use IntegrityConstraintViolationException in Spring?
+			} catch (SQLIntegrityConstraintViolationException e) { 
 				new ErrorBox("The course was already added!").display();
 				e.printStackTrace();
 			} catch (SQLException | ParseException e) {
@@ -161,7 +169,7 @@ public class AssessmentForm {
 			}
 			
 			this.window.close();
-			myCourses.display();
+			myCourses.display(true);
 			event.consume();
 		});		
 		
