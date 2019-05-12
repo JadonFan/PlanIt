@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.net.*?>
+
+<VBox id="vBox" prefHeight="400" prefWidth="800" xmlns:fx="http://javafx.com/fxml" fx:controller="home.MenuController">
+   <MenuBar fx:id="menuBar">
+      <menus>
+         <Menu text="Schedules">
+         	<items>
+         		<MenuItem text="Calendar" onAction="#loadCalendar"/>
+         	</items>
+         </Menu>
+         <Menu text="Academics">
+         	<items>
+         		<MenuItem text="Courses" onAction="#loadCourses"/>
+         		<MenuItem text="Gallery" onAction="#loadImageGallery"/>
+         	</items>
+         </Menu>
+         <Menu text="Properties">
+         	<items>
+         		<MenuItem text="Settings" onAction="#loadSettings"/>
+         		<MenuItem text="Help" onAction="#loadHelp"/>
+         		<SeparatorMenuItem  />
+         		<MenuItem text="Log Out" onAction="#logOut"/>
+         	</items>
+         </Menu>
+      </menus>
+   </MenuBar>
+    
+  	<stylesheets>
+  		<URL value="@menubar.css"/>
+  	</stylesheets>
+</VBox>
