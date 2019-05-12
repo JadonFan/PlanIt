@@ -1,7 +1,10 @@
 package home;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import alerts.ErrorBox;
 import application.PlannerDb;
@@ -94,12 +97,21 @@ public class LogIn extends Application {
 	public static void main(String[] args) {
 		System.out.println(">> The application has been launched.");
 		
-		try {
+		final String propertiesPath = System.getProperty("user.dir").toString().
+				concat("/src/main/resources/login.properties"); //$NON-NLS-1$ //$NON-NLS-2$
+
+		try (FileReader inReader = new FileReader(propertiesPath)){ //$NON-NLS-1$
+			Properties logInProperties = new Properties();
+			logInProperties.load(inReader);
+			
+			String username = logInProperties.getProperty("username"); //$NON-NLS-1$
+			String password = logInProperties.getProperty("password"); //$NON-NLS-1$
+			
 			// PlannerDb.setEntityManagerFactory(Persistence.createEntityManagerFactory("Planner"));
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 			PlannerDb.setConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/planner?useUnicode="
-					+ "true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", "root", "uright123")); //$NON-NLS-1$
-		} catch (SQLException | ClassNotFoundException e) {
+					+ "true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", username, password)); //$NON-NLS-1$
+		} catch (IOException | SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		} 
 		
