@@ -31,14 +31,14 @@ public class CalendarMonth implements MonthPaneI {
 	/**
 	 * Finds the calendar object for the previous or next month, with the year adjusted as necessary
 	 * <p>
-	 * <i> Using the Calendar's roll method(int, int) directly on the {@code currentCal} parameter might cause some unexpected
-	 * changes to {@code currentCal} elsewhere in the codebase </i>
-	 * @param currentCal : calendar object with the current date
-	 * @param up : positive to roll up the month of {@code currentCal} by 1, 0 to not roll, negative to roll down the month by 1
+	 * Using the Calendar's {@code roll(int, int)} method directly on the {@code currentCal} parameter might 
+	 * cause some unexpected changes to {@code currentCal} elsewhere in the codebase
+	 * @param currentCal the calendar object with the current date
+	 * @param up positive to roll up the month of {@code currentCal} by 1, 0 to not roll, negative to roll down the month by 1
 	 * @return a clone of the currentCal after the roll is completed
 	 */
-	public static Calendar findNeighbourCal(Calendar currentCal, int up) {
-		Calendar neighbourCal = (Calendar) currentCal.clone();  // A potentially expensive operation, but works for all types of 
+	public static Calendar findNeighbourCal(final Calendar currentCal, int up) {
+		Calendar neighbourCal = (Calendar) currentCal.clone();  // A potentially expensive operation, but works for all subclasses of 
 															    // calendars that extend Java's Calendar abstract class
 		up = Integer.signum(up); // To help avoid errors, we'll only roll the calendar up or down by one "unit" (month/year)
 		

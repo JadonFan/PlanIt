@@ -52,7 +52,7 @@ public class ConfirmBox extends AlertBox {
 	public boolean display() {		
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
-		window.setTitle("Confirm Changes");
+		window.setTitle(this.boxTitle);
 		window.setMinWidth(250);
 		
 		Label label = new Label(this.boxText);

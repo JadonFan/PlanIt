@@ -34,6 +34,7 @@ public class CourseDaoImpl implements CourseDao {
 	
 	@Override
 	public void loadCourses(Connection con) throws SQLException {
+		// TODO Once the course priority thing is completely figured out, this query should have "ORDER BY priority DESC"
 		PreparedStatement pstmt = con.prepareStatement("SELECT * FROM my_courses WHERE student_id = ?"); //$NON-NLS-1$
 		pstmt.setInt(1, Session.getStudentId());
 		
@@ -68,10 +69,11 @@ public class CourseDaoImpl implements CourseDao {
 	}
 	
 	
+	/** {@inheritDoc} */
 	@Override
-	public void editCourseIdentifier(Connection con, Course courseToUpdate, String updatedCourseIdentifier) throws SQLException {
+	public void editCourseName(Connection con, Course courseToUpdate, String updatedCourseName) throws SQLException {
 		Pattern p = Pattern.compile(Course.COURSE_IDENTIFIER_REGEX);
-		Matcher matcher = p.matcher(updatedCourseIdentifier);
+		Matcher matcher = p.matcher(updatedCourseName);
 		if (!matcher.matches()) { 
 			throw new IllegalArgumentException("The course identifier is not correctly formatted");
 		}
@@ -83,6 +85,13 @@ public class CourseDaoImpl implements CourseDao {
 		
 		pstmt.execute();
 		pstmt.close();
+	}
+	
+	
+	/** {@inheritDoc} */
+	@Override
+	public void editCoursePriority(Connection con, Course courseToUpdate, float updatedPriority) throws SQLException {
+
 	}
 	
 	

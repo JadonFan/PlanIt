@@ -3,3 +3,6 @@
 
 # Ignore the Java bytecode files
 /bin/
+/.externalToolBuilders/
+/.metadata/
+/.settings/

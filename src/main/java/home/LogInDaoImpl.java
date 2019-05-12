@@ -57,14 +57,15 @@ import user.Session;
 	
 	@Override
 	public boolean isCorrectCredentials(Connection con, final String username, final String unhashedPassword) throws SQLException {
-		PreparedStatement pstmt = con.prepareStatement("SELECT hashed_password, student_id FROM users WHERE username = ?"); //$NON-NLS-1$
+		PreparedStatement pstmt = con.prepareStatement("SELECT student_id, hashed_password FROM users WHERE username = ?"
+				+ " LIMIT 1"); //$NON-NLS-1$
 		pstmt.setNString(1, username);
 		
 		ResultSet resultSet = pstmt.executeQuery();
 		boolean isCorrectCredential = false;
 		if (resultSet.next()) {
-			String hashedPassword = resultSet.getNString(1);
-			Session.setStudentId(resultSet.getInt(2));
+			Session.setStudentId(resultSet.getInt(1));
+			String hashedPassword = resultSet.getNString(2);
 			isCorrectCredential = BCrypt.checkpw(unhashedPassword, hashedPassword);
 		}
 		

@@ -222,7 +222,7 @@ public class MyCourses {
 		MaskedTextField crsText = new MaskedTextField(crsDet.toString(), Font.font("Times New Roman", FontWeight.BOLD, 32));
 		Consumer<String> onEnterFunc = str -> {
 			try {
-				new CourseDaoImpl(this.currentCourses).editCourseIdentifier(PlannerDb.getConnection(), crsDet, str);
+				new CourseDaoImpl(this.currentCourses).editCourseName(PlannerDb.getConnection(), crsDet, str);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
