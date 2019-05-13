@@ -31,7 +31,7 @@ public class AssessmentDaoImpl implements AssessmentDao {
 		pstmt.setNString(1, astmt.getName());
 		pstmt.setTimestamp(2, sqlDueTimestamp, astmt.getDueDate());
 		pstmt.setFloat(3, astmt.getWeighting());
-		pstmt.setInt(4, 0); // TODO get astmt type id in a separate method in the Assessment class
+		pstmt.setInt(4, astmt.findAstmtTypeId()); // TODO get astmt type id in a separate method in the Assessment class
 		pstmt.setInt(5, this.course.getCrsNo());
 		pstmt.setInt(6, Session.getStudentId());
 		
@@ -66,14 +66,21 @@ public class AssessmentDaoImpl implements AssessmentDao {
 			int astmt_type = resultSet.getInt(5); 
 			
 			// TODO move as a method in the Assessment class
+			Assessment astmt = null;
 			switch (AssessmentType.getAstmtTypeById(astmt_type)) {
 				case ASSIGNMENT:
-					Assessment astmt = new Assignment(astmtName, dueDate, weighting);
-					astmt.setId(astmtId);
-					this.course.getAssessments().add(astmt);
+					astmt = new Assignment(astmtName, dueDate, weighting);
+					break;
+				case EXAMINATION:
+					astmt = new Examination(astmtName, weighting, Examination.MIDTERM1);
 					break;
 				default:
 					// does nothing
+			}
+			
+			if (astmt != null) {
+				astmt.setId(astmtId);
+				this.course.getAssessments().add(astmt);
 			}
 		}
 		

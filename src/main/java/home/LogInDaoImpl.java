@@ -5,10 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+
+import org.hibernate.HibernateException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import abstractdao.LogInDao;
 import user.Session;
+import user.User;
 
 /*package-private*/ class LogInDaoImpl implements LogInDao {
 	public LogInDaoImpl() { }
@@ -19,7 +25,7 @@ import user.Session;
 	}
 
 	
-	/*
+	
 	public void registerUser(EntityManagerFactory emf, final int studentId, final String username, final String unhashedPassword) 
 			throws SQLException {
 		EntityManager entityManager = emf.createEntityManager();
@@ -39,7 +45,7 @@ import user.Session;
 			entityManager.close();
 		}
 	}
-	*/
+	
 	
 	@Override
 	public boolean registerUser(Connection con, final int studentId, final String username, final String unhashedPassword) 

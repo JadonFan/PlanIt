@@ -21,13 +21,13 @@ import alerts.ErrorBox;
 import application.PlannerDb;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -38,15 +38,15 @@ public class AssessmentForm {
 	private Stage window = new Stage();
 	private List<Label> labels;
 	private Map<AssessmentType, List<Label>> labelMap;	
+	private static final String[] LABEL_TEXTS = new String[] {"Name", "Weight", "Component", "Submission Method", "Location"}; 
+
 	
 	@SuppressWarnings("synthetic-access")
 	public AssessmentForm() {
 		this.labels = new ArrayList<>();
 		this.labelMap = new HashMap<>();
-				
-		String[] LabelTexts = new String[] {"Name", "Weight", "Component", "Submission Method", "Location"}; 
-		
-		for (String labelText : LabelTexts) {
+					
+		for (String labelText : LABEL_TEXTS) {
 			this.labels.add(new Label(labelText));
 		}
 		
@@ -94,8 +94,7 @@ public class AssessmentForm {
 	}
 	
 	
-	@SuppressWarnings("unused")
-	private boolean hasErroneousFields(TextField[] textFields) {
+	private boolean hasErroneousFields() {
 		Set<TextField> erroneousFields = new HashSet<>();
 		
 		return erroneousFields.size() != 0;
@@ -103,42 +102,53 @@ public class AssessmentForm {
 	
 	
 	public void display(MyCourses myCourses, Course course) {	
-		Button doneButton = new Button("Done");
-		PopupForm popupForm = new PopupForm(this.labels, doneButton);
+		TextField[] textFields = new TextField[LABEL_TEXTS.length];
 		
+		VBox formBoxLayout = new VBox();
+		GridPane formPane = new GridPane();
+		PopupForm.skinFormLayout(formBoxLayout, formPane, this.window);
+		this.window.setWidth(400);
+				
 		Text selectToggleText = new Text("1. Select the type of assessment");
-		popupForm.getFormBox().getChildren().add(selectToggleText);
+		formBoxLayout.getChildren().add(selectToggleText);
 		
-;		ToggleGroup group = new ToggleGroup();
+		ToggleGroup group = new ToggleGroup();
 		group.selectedToggleProperty().addListener((change, oldToggle, currToggle) -> {
 			AssessmentType astmtType = AssessmentType.valueOf(((RadioButton) currToggle).getText()); 
-			AssessmentForm.disableUnusedFields(this.labelMap.getOrDefault(astmtType, null), this.labels, popupForm.getTextFields());
+			AssessmentForm.disableUnusedFields(this.labelMap.getOrDefault(astmtType, null), this.labels, textFields);
 		});
 		Pair<GridPane, RadioButton[]> astmtTypeBtns = CommonToggleGroupFactory.buildStdRadioGrp(group, AssessmentType.reprAllAstmtTypes());
-		popupForm.getFormBox().getChildren().add(astmtTypeBtns.getKey());
+		formBoxLayout.getChildren().add(astmtTypeBtns.getKey());
 		
 		Separator separator = new Separator();
 		Text enterValueText = new Text("2. Enter the details for this assessment");
-		popupForm.getFormBox().getChildren().addAll(separator, enterValueText);
+		formBoxLayout.getChildren().addAll(separator, enterValueText);
 		
-		// *** TODO use a separate method and not the popup form class ***
+		for (int i = 0; i < LABEL_TEXTS.length; i++) {
+			Label label = new Label(LABEL_TEXTS[i]);
+			formPane.add(label, 0, i);
+			TextField textField = new TextField();
+			formPane.add(textField, 1, i);
+			textFields[i] = textField;
+		}
+		
 		Label dateLbl = new Label("Date");
+		formPane.add(dateLbl, 0, LABEL_TEXTS.length);
 		JFXDatePicker datePicker = new JFXDatePicker();
+		formPane.add(datePicker, 1, LABEL_TEXTS.length);
+		
 		Label timeLbl = new Label("Time");
+		formPane.add(timeLbl, 0, LABEL_TEXTS.length + 1);
 		JFXTimePicker timePicker = new JFXTimePicker();
 		timePicker.set24HourView(true);
-		List<Pair<Label, Control>> extraControls = new ArrayList<>();
-		extraControls.add(new Pair<>(dateLbl, datePicker));
-		extraControls.add(new Pair<>(timeLbl, timePicker));
+		formPane.add(timePicker, 1, LABEL_TEXTS.length + 1);
 		
-		popupForm.mapLayout(this.window, extraControls);
-		this.window.setWidth(400);
-		// ****************************************************************
+		formBoxLayout.getChildren().add(formPane);
 		
-		doneButton.setOnAction(event -> {  
-			TextField[] textFields = popupForm.getTextFields();
-			
-			if (this.hasErroneousFields(textFields)) {
+		Button doneButton = new Button("Done");
+		formBoxLayout.getChildren().add(doneButton);
+		doneButton.setOnAction(event -> {  			
+			if (this.hasErroneousFields()) {
 				return;
 			}
 			
@@ -173,7 +183,7 @@ public class AssessmentForm {
 			event.consume();
 		});		
 		
-		Scene scene = new Scene(popupForm.getFormBox());
+		Scene scene = new Scene(formBoxLayout);
 		this.window.setScene(scene);
 		this.window.show();
 	}

@@ -101,6 +101,19 @@ public abstract class Assessment {
 	public abstract Rating comparedToCourseAvg(final int avgGrade);
 		
 	
+	public int findAstmtTypeId() {
+		int typeId = -1;
+		
+		if (this.getClass() == Assignment.class) {
+			typeId = AssessmentType.ASSIGNMENT.getAstmtTypeId();
+		} else if (this.getClass() == Examination.class) {
+			typeId = AssessmentType.EXAMINATION.getAstmtTypeId();
+		}
+			
+		return typeId;
+	}
+	
+	
 	public int findRemainingDays() {
 		return (int) ((this.dueDate.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) / (1000 * 60 * 60 * 24));
 	}

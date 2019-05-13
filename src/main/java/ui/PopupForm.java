@@ -74,59 +74,54 @@ public class PopupForm {
 		this.formBox = formBox;
 	}
 	
+	
+	public static void skinFormLayout(VBox vb, GridPane gp, Stage window) {
+		window.setWidth(350);
 
-	public GridPane buildFormPane(List<Pair<Label, Control>> extraControls) {
-		GridPane formPane = new GridPane();
-		formPane.setVgap(10);
-		formPane.setHgap(10);
-		formPane.setAlignment(Pos.CENTER);
-		formPane.setPadding(new Insets(25));
+		vb.setPadding(new Insets(5));
+		vb.setSpacing(5);
+		vb.setAlignment(Pos.CENTER);
+		vb.prefWidthProperty().bind(window.widthProperty());
+		
+		gp.setVgap(10);
+		gp.setHgap(10);
+		gp.setAlignment(Pos.CENTER);
+		gp.setPadding(new Insets(25));
+	}
+	
+	
+	public void mapPaneToPanels(GridPane gp, List<Pair<Label, Control>> extraControls) {
 		int i = 0, j = 0;
 		
 		for (; i < this.labels.size(); i++) {
 			this.textFields[i] = new TextField();
-			formPane.add(this.labels.get(i), 0, i);
-			formPane.add(this.textFields[i], 1, i);
+			gp.add(this.labels.get(i), 0, i);
+			gp.add(this.textFields[i], 1, i);
 			this.textFields[i].setCache(false);
 		}
 		
 		if (extraControls != null) {
 			for (; j < extraControls.size(); i++, j++) {
-				formPane.add(extraControls.get(j).getKey(), 0, i);
-				formPane.add(extraControls.get(j).getValue(), 1, i);
+				gp.add(extraControls.get(j).getKey(), 0, i);
+				gp.add(extraControls.get(j).getValue(), 1, i);
 			}
-		}
-		
-		return formPane;
+		}		
 	}
 	
 	
 	// TODO change to set the scene width instead
 	public void mapLayout(Stage window) {
-		window.setWidth(350);
-
-		this.formBox.setPadding(new Insets(5));
-		this.formBox.setSpacing(5);
-		this.formBox.setAlignment(Pos.CENTER);
-		this.formBox.prefWidthProperty().bind(window.widthProperty());
-		
-		this.formBox.getChildren().add(this.buildFormPane(null));
-		
-		this.formBox.getChildren().addAll(this.buttons);
+		this.mapLayout(window, null);
 	}
 	
 	
 	// TODO change to set the scene width instead
 	public void mapLayout(Stage window, List<Pair<Label, Control>> extraControls) {
-		window.setWidth(350);
-
-		this.formBox.setPadding(new Insets(5));
-		this.formBox.setSpacing(5);
-		this.formBox.setAlignment(Pos.CENTER);
-		this.formBox.prefWidthProperty().bind(window.widthProperty());
+		GridPane formPane = new GridPane();
+		PopupForm.skinFormLayout(this.formBox, formPane, window);
+		this.mapPaneToPanels(formPane, extraControls);
 		
-		this.formBox.getChildren().add(this.buildFormPane(extraControls));
-		
+		this.formBox.getChildren().add(formPane);
 		this.formBox.getChildren().addAll(this.buttons);
 	}
 }

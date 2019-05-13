@@ -34,7 +34,6 @@ public class LogIn extends Application {
 		signInPane.setHgap(10);
 		signInPane.setAlignment(Pos.CENTER);
 		
-		
 		// Username Input
 		Label usernameLabel = new Label("Username:");
 		GridPane.setConstraints(usernameLabel, 0, 0);
@@ -93,7 +92,7 @@ public class LogIn extends Application {
 		this.display(primaryWindow);
 	}
 	
-	
+
 	public static void main(String[] args) {
 		System.out.println(">> The application has been launched");
 		
@@ -107,18 +106,19 @@ public class LogIn extends Application {
 			// PlannerDb.setEntityManagerFactory(Persistence.createEntityManagerFactory("Planner"));
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 	       
-	        /*
+	       
 			PlannerDb.setConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/planner?useUnicode=" + "true&use"
 					+ "JDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", username, password)); //$NON-NLS-1$
-			*/
 	        
+			/*
 			PlannerDb.setConnection(DriverManager.getConnection("jdbc:mysql://planner.cljnz1x2e9qg.us-east-2.rds.amazonaws.com:3306/planner?useUnicode="
 					+ "true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", username, password)); //$NON-NLS-1$
-			
+			*/
 		} catch (IOException | SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		} 
 		
 		launch(args);
 	}
+
 }

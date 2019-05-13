@@ -86,6 +86,19 @@ public class Course implements Serializable {
 	}
 	
 	
+	public Assessment getAstmtById(final int astmtId) {
+		Assessment targetAstmt = null;
+		for (Assessment currentAstmt : this.assessments) {
+			if (currentAstmt.getId() == astmtId) {
+				targetAstmt = currentAstmt;
+				break;
+			}
+		}
+		
+		return targetAstmt;
+	}
+	
+	
 	public void sortAstmtsByDate() {
 		// We'll refrain from using the sort(List<T>) method in Java's Collection framework since that will mutate the object 
 		// itself. We could clone the assessment list, but that is an extra operation of at least O(n*m) time complexity where 
@@ -126,7 +139,7 @@ public class Course implements Serializable {
 			GridPane astmtPane = new GridPane();
 			astmtPane.setHgap(30);
 			
-			Text astmtNameText = new Text(astmt.getName());
+			Text astmtNameText = new Text(String.format("%s (%s)", astmt.getName(), astmt.getClass().getSimpleName()));
 			astmtNameText.setFont(Font.font("Verdana", FontWeight.BOLD, 13));
 			astmtPane.add(astmtNameText, 0, 0); // Set assessment name
 			

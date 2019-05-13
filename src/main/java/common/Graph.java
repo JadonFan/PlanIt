@@ -10,18 +10,18 @@ import java.util.Vector;
 import javafx.util.Pair;
 
 public class Graph<T> {	
-	protected static class Vertex<T> implements Comparable<Vertex<T>> {
+	public static class Vertex<T> implements Comparable<Vertex<T>> {
 		private int id;
 		private T element;
-		private boolean isCompleted;
+		private boolean isActivated;
 		@SuppressWarnings("unused")
-		private Map<Vertex<T>, Double> adjacentVertices;
+		private Map<Integer, Double> adjacentVertices;
 
 		
-		public Vertex(int id, T element, boolean isCompleted, Map<Vertex<T>, Double> adjacentVertices) {
+		public Vertex(int id, T element, boolean isActivated, Map<Integer, Double> adjacentVertices) {
 			this.id = id;
 			this.element = element;
-			this.setIsCompleted(isCompleted);
+			this.isActivated = isActivated;
 			this.adjacentVertices = adjacentVertices;
 		}
 		
@@ -42,19 +42,19 @@ public class Graph<T> {
 			this.element = element;
 		}
 
-		public boolean getIsCompleted() {
-			return this.isCompleted;
+		public boolean getIsActivated() {
+			return this.isActivated;
 		}
 
-		public void setIsCompleted(boolean isCompleted) {
-			this.isCompleted = isCompleted;
+		public void setIsActivated(boolean isActivated) {
+			this.isActivated = isActivated;
 		}
 		
 		public Map<Vertex<T>, Double> getAdjacentVertices() {
 			return this.getAdjacentVertices();
 		}
 
-		public void setAdjacentVertices(Map<Vertex<T>, Double> adjacentVertices) {
+		public void setAdjacentVertices(Map<Integer, Double> adjacentVertices) {
 			this.adjacentVertices = adjacentVertices;
 		}
 
@@ -124,9 +124,11 @@ public class Graph<T> {
 		this.deleteVertex(vertexIdToRemove, this.adjacencyList);
 	}
 	
+	
 	public void deleteVertex(final Vertex<T> vertexToRemove) {
 		this.deleteVertex(vertexToRemove.getId());
 	}
+	
 	
  	protected void deleteVertex(final int vertexIdToRemove, Set<Vertex<T>> adjacencyList) {
  		Iterator<Vertex<T>> it = adjacencyList.iterator();
@@ -212,7 +214,7 @@ public class Graph<T> {
 			Map<Vertex<T>, Double> currAdjVertices = it.next().getAdjacentVertices();
 			
 			for (Map.Entry<Vertex<T>, Double> entry : currAdjVertices.entrySet()) {
-				if (!entry.getKey().getIsCompleted() && !isChecked[adjCount] && entry.getValue() != 0 && 
+				if (!entry.getKey().getIsActivated() && !isChecked[adjCount] && entry.getValue() != 0 && 
 						dists[closeVertexId] != Integer.MAX_VALUE && dists[closeVertexId] + entry.getValue() < dists[adjCount]) {
 					dists[adjCount] = dists[closeVertexId] + entry.getValue();
 					shortestGraph.addVertex(entry.getKey(), true);

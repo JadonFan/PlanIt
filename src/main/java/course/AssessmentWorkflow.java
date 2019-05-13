@@ -1,12 +1,7 @@
 package course;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import application.PlannerDb;
@@ -31,11 +26,10 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 import ui.CommonTooltipFactory;
 import ui.CoordinatesManager;
-import user.Session;
 
-public class AssessmentWorkflow extends Graph<Course> {
+public class AssessmentWorkflow extends Graph<Assessment> {
 	private MyCourses myCourses;
-	private Map<Vertex<Course>, StackPane> graphPaneMap;
+	private Map<Vertex<Assessment>, StackPane> graphPaneMap;
 	
 	
 	public AssessmentWorkflow(MyCourses myCourses) {
@@ -52,11 +46,11 @@ public class AssessmentWorkflow extends Graph<Course> {
 		this.myCourses = myCourses;
 	}
 	
-	public Map<Vertex<Course>, StackPane> getGraphPaneMap() {
+	public Map<Vertex<Assessment>, StackPane> getGraphPaneMap() {
 		return this.graphPaneMap;
 	}
 
-	public void setGraphPaneMap(Map<Vertex<Course>, StackPane> graphPaneMap) {
+	public void setGraphPaneMap(Map<Vertex<Assessment>, StackPane> graphPaneMap) {
 		this.graphPaneMap = graphPaneMap;
 	}
 
@@ -78,10 +72,10 @@ public class AssessmentWorkflow extends Graph<Course> {
 		CoordinatesManager coordsManager = new CoordinatesManager(graphSheet);
 		
 		try {
-			this.loadWorkflowGraph(PlannerDb.getConnection());
+			new AstmtWorkflowDaoImpl().loadWorkflowGraph(PlannerDb.getConnection(), this);
 			
 			// Set the vertices of the assessment workflow graph
-			for (Vertex<Course> vertex : super.getAdjacencyList()) {
+			for (Vertex<Assessment> vertex : super.getAdjacencyList()) {
 				StackPane stackPane = new StackPane();
 				Text text = new Text(vertex.getElement().toString());
 				Circle node = new Circle();
@@ -97,10 +91,10 @@ public class AssessmentWorkflow extends Graph<Course> {
 			
 			
 			// Set the edges of the assessment workflow graph
-			for (Vertex<Course> mainVertex : super.getAdjacencyList()) {				
+			for (Vertex<Assessment> mainVertex : super.getAdjacencyList()) {				
 				Bounds mainVertexBounds = this.graphPaneMap.get(mainVertex).getBoundsInParent();
 	
-				for (Vertex<Course> adjVertex : mainVertex.getAdjacentVertices().keySet()) {
+				for (Vertex<Assessment> adjVertex : mainVertex.getAdjacentVertices().keySet()) {
 					Line edgeLine = new Line();
 					Bounds adjVertexBounds = this.graphPaneMap.get(adjVertex).getBoundsInParent();
 					
@@ -174,70 +168,5 @@ public class AssessmentWorkflow extends Graph<Course> {
 		btnTopBarBox.getChildren().add(coursesBtn);
 		
 		return btnTopBarBox;
-	}
-	
-	
- 	public void addVertex(Connection con, Vertex<Course> vertex, Map<Vertex<Course>,Double> adjacentVertices) throws SQLException {
-		super.addVertex(vertex, false);
-		PreparedStatement pstmt = con.prepareStatement("INSERT INTO astmt_workflow(course_number, adjacent_vertices,"
-				+ "distances, student_id) VALUES(? , ? , ? , ?)");
-		
-		// Course number
-		pstmt.setInt(1, vertex.getElement().getCrsNo());
-		
-		// Adjacent course vertices
-		String adjacencies = "";
-		for (Vertex<Course> currentVertex : adjacentVertices.keySet()) {
-			adjacencies += Integer.toString(currentVertex.getId()).concat(",");
-		}
-		pstmt.setNString(2, adjacencies.substring(0, adjacencies.length() - 1));
-		
-		// Adjacent distances
-		String distances = "";
-		for (Double currentDistance : adjacentVertices.values()) {
-			distances += Double.toString(currentDistance).concat(",");
-		}
-		pstmt.setNString(3, distances.substring(0, distances.length() - 1));
-		
-		// Associated student ID
-		pstmt.setInt(4, Session.getStudentId());
-
-		pstmt.executeUpdate();
-		pstmt.close();
-	}
-	
-	
-	public void loadWorkflowGraph(Connection con) throws SQLException {
-		PreparedStatement pstmt = con.prepareStatement("SELECT * FROM astmt_workflow WHERE student_id = ? AND is_active = 'Y'");
-		pstmt.setInt(1, Session.getStudentId());
-		
-		ResultSet resultSet = pstmt.executeQuery();
-		// A sad O(n^3) algorithm...
-		// FIXME use a SELECT FROM INNER JOIN ON query to improve time efficiency 
-		while (resultSet.next()) {
-			int vertexId = resultSet.getInt(1);
-			Course course = this.myCourses.getCourseById(resultSet.getInt(2));
-			
-			List<Vertex<Course>> connectingCourses = new ArrayList<>();
-			for (String adjVertexStrId : resultSet.getNString(3).split(",")) {
-				connectingCourses.add(super.getVertexById(Integer.parseInt(adjVertexStrId)));
-			}
-			
-			List<Double> connectingDistances = new ArrayList<>();
-			for (String adjDistance : resultSet.getNString(4).split(",")) {
-				connectingDistances.add(Double.parseDouble(adjDistance));
-			}
-			
-			Map<Vertex<Course>, Double> adjacentCourses = new HashMap<>();
-			for (int i = 0; i < connectingCourses.size(); i++) {
-				adjacentCourses.put(connectingCourses.get(i), connectingDistances.get(i));
-			}
-			
-			Vertex<Course> vertex = new Vertex<Course>(vertexId, course, false, adjacentCourses);
-			this.addVertex(vertex, false);
-		}
-		
-		resultSet.close();
-		pstmt.close();
 	}
 }

@@ -20,11 +20,16 @@ buildscript {
 plugins {
     // Apply the java-library plugin to add support for Java Library
     id 'java-library'
+    
+    id 'java'
+    
+    id 'eclipse'
+    
+    id 'application'
+    
+    id 'project-report'
 }
 
-
-apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'gradle-one-jar'
 apply plugin: 'com.github.johnrengelman.shadow'
 
@@ -54,11 +59,18 @@ dependencies {
     
     compile 'com.jfoenix:jfoenix:9.0.8'  
     
-	// compile group: 'javax.persistence', name: 'persistence-api', version: '2.2'
     
     compile 'org.hibernate:hibernate-core:5.4.2.Final'    
     compile 'org.hibernate:hibernate-entitymanager:5.4.2.Final'
-    compile 'org.hibernate:hibernate-osgi:5.4.2.Final'
+   	compile 'org.hibernate:hibernate-osgi:5.4.2.Final'
+    
+    // compile 'com.google.api-client:google-api-client:1.23.0'
+    // compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
+    // compile 'com.google.apis:google-api-services-gmail:v1-rev83-1.23.0'
+    // compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'    
+    // compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+   	// compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'    
+    // compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.8'
 }
 
 
@@ -72,29 +84,29 @@ task awesomeFunJar(type: OneJar) {
 }
 
 
-ext.moduleName = 'Planner' 
-
-compileJava {
-    inputs.property("moduleName", moduleName)
-    doFirst {
-        options.compilerArgs = [
-            '--module-path', classpath.asPath,
-            '--add-modules', 'javafx.controls',
-            '--add-modules', 'javafx.fxml',
-            '--add-modules', 'javafx.web',
-            '--add-modules', 'javafx.graphics',
-            '--add-modules', 'javafx.media',
-            '--add-modules', 'jbcrypt',
-            '--add-modules', 'com.jfoenix'
-        ]
-        classpath = files()
+eclipse.classpath.file {
+  withXml {
+    xml ->
+    def node = xml.asNode()
+    node.classpathentry.forEach {
+      if (it.@kind == 'lib') {
+        def sourcePath = it.@path.replace('.jar', '-sources.jar')
+        if (file(sourcePath).exists()) {
+          it.@sourcepath = sourcePath
+        }
+      }
     }
+  }
 }
 
 
+ext.moduleName = 'Planner' 
+mainClassName = 'home.LogIn'
+
 jar {
-  	from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes 'Main-Class': 'home.LogIn'
     }
+    
+    from (configurations.compile.collect { it.isDirectory() ? it : zipTree(it) })
 }
