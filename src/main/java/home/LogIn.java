@@ -99,7 +99,7 @@ public class LogIn extends Application {
 		try (InputStream inStream = LogIn.class.getResourceAsStream("/login.properties")) { //$NON-NLS-1$
 			Properties logInProperties = new Properties();
 			logInProperties.load(inStream);
-			
+
 			String username = logInProperties.getProperty("username"); //$NON-NLS-1$
 			String password = logInProperties.getProperty("password"); //$NON-NLS-1$
 			

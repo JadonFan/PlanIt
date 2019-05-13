@@ -32,40 +32,38 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import ui.CommonToggleGroupFactory;
+import ui.CommonUi;
 import ui.PopupForm;
 
+@SuppressWarnings("synthetic-access")
 public class AssessmentForm {
 	private Stage window = new Stage();
-	private List<Label> labels;
-	private Map<AssessmentType, List<Label>> labelMap;	
+	private static final List<Label> labels = new ArrayList<>();
+	private static final Map<AssessmentType, List<Label>> labelMap = new HashMap<>();	
 	private static final String[] LABEL_TEXTS = new String[] {"Name", "Weight", "Component", "Submission Method", "Location"}; 
 
 	
-	@SuppressWarnings("synthetic-access")
-	public AssessmentForm() {
-		this.labels = new ArrayList<>();
-		this.labelMap = new HashMap<>();
-					
+	static {
 		for (String labelText : LABEL_TEXTS) {
-			this.labels.add(new Label(labelText));
+			labels.add(new Label(labelText));
 		}
 		
-		this.labelMap.put(AssessmentType.ASSIGNMENT, new ArrayList<>() {
+		labelMap.put(AssessmentType.ASSIGNMENT, new ArrayList<>() {
 			private static final long serialVersionUID = 1L;
 			{
-				add(AssessmentForm.this.labels.get(0));
-				add(AssessmentForm.this.labels.get(1));
-				add(AssessmentForm.this.labels.get(3));
+				add(AssessmentForm.labels.get(0));
+				add(AssessmentForm.labels.get(1));
+				add(AssessmentForm.labels.get(3));
 			}
 		});
 		
-		this.labelMap.put(AssessmentType.EXAMINATION, new ArrayList<>() {
+		labelMap.put(AssessmentType.EXAMINATION, new ArrayList<>() {
 			private static final long serialVersionUID = 1L;
 			{
-				add(AssessmentForm.this.labels.get(0));
-				add(AssessmentForm.this.labels.get(1));
-				add(AssessmentForm.this.labels.get(2));
-				add(AssessmentForm.this.labels.get(4));
+				add(AssessmentForm.labels.get(0));
+				add(AssessmentForm.labels.get(1));
+				add(AssessmentForm.labels.get(2));
+				add(AssessmentForm.labels.get(4));
 			}
 		});		
 	}
@@ -73,24 +71,6 @@ public class AssessmentForm {
 	
 	public Stage getWindow() {
 		return this.window;
-	}
-	
-	
-	// TODO move to the ui package in a suitable class
-	public static void disableUnusedFields(List<Label> relevantLabels, List<Label> allLabels, TextField[] allTextFields) {
-		if (relevantLabels == null) {
-			return;
-		}
-		
-		for (int i = 0; i < allLabels.size(); i++) {
-			// TODO use label name to check, rather than the default contains method
-			if (relevantLabels.contains(allLabels.get(i))) {
-				allTextFields[i].setDisable(false);
-			} else {
-				allTextFields[i].setDisable(true);
-				allTextFields[i].setStyle(""); // TODO get darker shade of grey to make it more clear that the field is disabled
-			}
-		}
 	}
 	
 	
@@ -102,12 +82,12 @@ public class AssessmentForm {
 	
 	
 	public void display(MyCourses myCourses, Course course) {	
+		this.window.setWidth(400);
 		TextField[] textFields = new TextField[LABEL_TEXTS.length];
 		
 		VBox formBoxLayout = new VBox();
 		GridPane formPane = new GridPane();
 		PopupForm.skinFormLayout(formBoxLayout, formPane, this.window);
-		this.window.setWidth(400);
 				
 		Text selectToggleText = new Text("1. Select the type of assessment");
 		formBoxLayout.getChildren().add(selectToggleText);
@@ -115,7 +95,7 @@ public class AssessmentForm {
 		ToggleGroup group = new ToggleGroup();
 		group.selectedToggleProperty().addListener((change, oldToggle, currToggle) -> {
 			AssessmentType astmtType = AssessmentType.valueOf(((RadioButton) currToggle).getText()); 
-			AssessmentForm.disableUnusedFields(this.labelMap.getOrDefault(astmtType, null), this.labels, textFields);
+			CommonUi.disableUnusedFields(AssessmentForm.labelMap.getOrDefault(astmtType, null), AssessmentForm.labels, textFields);
 		});
 		Pair<GridPane, RadioButton[]> astmtTypeBtns = CommonToggleGroupFactory.buildStdRadioGrp(group, AssessmentType.reprAllAstmtTypes());
 		formBoxLayout.getChildren().add(astmtTypeBtns.getKey());

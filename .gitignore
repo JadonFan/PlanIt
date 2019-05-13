@@ -3,6 +3,8 @@
 
 # Ignore the Java bytecode files
 /bin/
+
+# Ignore the default IDE configuration files 
 /.externalToolBuilders/
 /.metadata/
 /.settings/

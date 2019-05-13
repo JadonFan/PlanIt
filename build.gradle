@@ -52,25 +52,30 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     
-    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
+	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
     runtime "mysql:mysql-connector-java:8.0.16"
         
     compile 'org.mindrot:jbcrypt:0.4'
     
     compile 'com.jfoenix:jfoenix:9.0.8'  
     
-    
     compile 'org.hibernate:hibernate-core:5.4.2.Final'    
     compile 'org.hibernate:hibernate-entitymanager:5.4.2.Final'
    	compile 'org.hibernate:hibernate-osgi:5.4.2.Final'
     
-    // compile 'com.google.api-client:google-api-client:1.23.0'
-    // compile 'com.google.oauth-client:google-oauth-client-jetty:1.23.0'
-    // compile 'com.google.apis:google-api-services-gmail:v1-rev83-1.23.0'
-    // compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'    
-    // compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
-   	// compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'    
-    // compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.8'
+    compile 'com.google.api-client:google-api-client:1.28.0'
+    compile 'com.google.api-client:google-api-client-java6:1.28.0'
+    compile 'com.google.api-client:google-api-client-servlet:1.28.0'
+    compile 'com.google.oauth-client:google-oauth-client-jetty:1.28.0'
+    compile 'com.google.oauth-client:google-oauth-client-java6:1.28.0'
+    compile 'com.google.apis:google-api-services-gmail:v1-rev103-1.25.0'
+    compile 'com.google.apis:google-api-services-oauth2:v2-rev150-1.25.0'
+    compile 'com.google.http-client:google-http-client-jackson2:1.29.1'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'    
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+   	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'    
+   	compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.9.13'
+    compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.8'
 }
 
 
@@ -104,9 +109,9 @@ ext.moduleName = 'Planner'
 mainClassName = 'home.LogIn'
 
 jar {
+    from (configurations.compile.collect { it.isDirectory() ? it : zipTree(it) })
+
     manifest {
         attributes 'Main-Class': 'home.LogIn'
     }
-    
-    from (configurations.compile.collect { it.isDirectory() ? it : zipTree(it) })
 }

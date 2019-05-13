@@ -76,8 +76,6 @@ public class PopupForm {
 	
 	
 	public static void skinFormLayout(VBox vb, GridPane gp, Stage window) {
-		window.setWidth(350);
-
 		vb.setPadding(new Insets(5));
 		vb.setSpacing(5);
 		vb.setAlignment(Pos.CENTER);
@@ -117,6 +115,8 @@ public class PopupForm {
 	
 	// TODO change to set the scene width instead
 	public void mapLayout(Stage window, List<Pair<Label, Control>> extraControls) {
+		window.setWidth(350);
+		
 		GridPane formPane = new GridPane();
 		PopupForm.skinFormLayout(this.formBox, formPane, window);
 		this.mapPaneToPanels(formPane, extraControls);
