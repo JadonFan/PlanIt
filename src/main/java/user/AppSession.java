@@ -1,6 +1,6 @@
 package user;
 
-public class Session {
+public class AppSession {
 	private static int studentId;
 	
 	public static int getStudentId() {
@@ -8,6 +8,6 @@ public class Session {
 	}
 
 	public static void setStudentId(int studentId) {
-		Session.studentId = studentId;
+		AppSession.studentId = studentId;
 	}
 }

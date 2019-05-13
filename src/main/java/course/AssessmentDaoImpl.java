@@ -8,7 +8,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import abstractdao.AssessmentDao;
-import user.Session;
+import user.AppSession;
 
 public class AssessmentDaoImpl implements AssessmentDao {
 	private Course course; // XXX should this be a list of assessments instead???
@@ -33,7 +33,7 @@ public class AssessmentDaoImpl implements AssessmentDao {
 		pstmt.setFloat(3, astmt.getWeighting());
 		pstmt.setInt(4, astmt.findAstmtTypeId()); // TODO get astmt type id in a separate method in the Assessment class
 		pstmt.setInt(5, this.course.getCrsNo());
-		pstmt.setInt(6, Session.getStudentId());
+		pstmt.setInt(6, AppSession.getStudentId());
 		
 		pstmt.execute();
 		this.course.getAssessments().add(astmt);
@@ -52,7 +52,7 @@ public class AssessmentDaoImpl implements AssessmentDao {
 		PreparedStatement pstmt = con.prepareStatement("SELECT astmt_id, astmt_name, due_date, weighting, astmt_type "
 				+ "FROM assessments WHERE course_number = ? AND student_id = ?"); //$NON-NLS-1$
 		pstmt.setInt(1, this.course.getCrsNo());
-		pstmt.setInt(2, Session.getStudentId());
+		pstmt.setInt(2, AppSession.getStudentId());
 		
 		this.course.getAssessments().clear();
 		ResultSet resultSet = pstmt.executeQuery();

@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import abstractdao.CourseDao;
-import user.Session;
+import user.AppSession;
 
 //Some dependency injection in this class would probably be nice...
 public class CourseDaoImpl implements CourseDao {	
@@ -36,7 +36,7 @@ public class CourseDaoImpl implements CourseDao {
 	public void loadCourses(Connection con) throws SQLException {
 		// TODO Once the course priority thing is completely figured out, this query should have "ORDER BY priority DESC"
 		PreparedStatement pstmt = con.prepareStatement("SELECT * FROM my_courses WHERE student_id = ?"); //$NON-NLS-1$
-		pstmt.setInt(1, Session.getStudentId());
+		pstmt.setInt(1, AppSession.getStudentId());
 		
 		this.courses.clear();
 		ResultSet resultSet = pstmt.executeQuery();
@@ -61,7 +61,7 @@ public class CourseDaoImpl implements CourseDao {
 		pstmt.setNString(2, crsDet.getSubject());
 		pstmt.setShort(3, crsDet.getCode());
 		pstmt.setNString(4, crsDet.getTitle());
-		pstmt.setInt(5, Session.getStudentId());
+		pstmt.setInt(5, AppSession.getStudentId());
 				
 		this.courses.add(crsDet);
 		pstmt.execute();

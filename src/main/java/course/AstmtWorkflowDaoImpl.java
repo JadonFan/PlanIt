@@ -13,7 +13,7 @@ import javax.persistence.EntityManagerFactory;
 
 import abstractdao.AstmtWorkflowDao;
 import common.Graph.Vertex;
-import user.Session;
+import user.AppSession;
 
 public class AstmtWorkflowDaoImpl implements AstmtWorkflowDao {
  	public void addVertex(Connection con, AssessmentWorkflow astmtWf, Vertex<Assessment> vertex,  
@@ -40,7 +40,7 @@ public class AstmtWorkflowDaoImpl implements AstmtWorkflowDao {
 		pstmt.setNString(3, distances.substring(0, distances.length() - 1));
 		
 		// Associated student ID
-		pstmt.setInt(4, Session.getStudentId());
+		pstmt.setInt(4, AppSession.getStudentId());
 
 		pstmt.executeUpdate();
 		pstmt.close();
@@ -120,7 +120,7 @@ public class AstmtWorkflowDaoImpl implements AstmtWorkflowDao {
 			DELIMITER ;
 		 */
 		CallableStatement cstmt = con.prepareCall("{call getWfDetails(? , ? , ? , ? , ? , ?)}"); 
-		cstmt.setInt(1, Session.getStudentId());
+		cstmt.setInt(1, AppSession.getStudentId());
 		cstmt.registerOutParameter(2, java.sql.Types.INTEGER);
 		cstmt.registerOutParameter(3, java.sql.Types.INTEGER);
 		cstmt.registerOutParameter(4, java.sql.Types.INTEGER);

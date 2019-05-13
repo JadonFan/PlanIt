@@ -13,7 +13,7 @@ import org.hibernate.HibernateException;
 import org.mindrot.jbcrypt.BCrypt;
 
 import abstractdao.LogInDao;
-import user.Session;
+import user.AppSession;
 import user.User;
 
 /*package-private*/ class LogInDaoImpl implements LogInDao {
@@ -70,7 +70,7 @@ import user.User;
 		ResultSet resultSet = pstmt.executeQuery();
 		boolean isCorrectCredential = false;
 		if (resultSet.next()) {
-			Session.setStudentId(resultSet.getInt(1));
+			AppSession.setStudentId(resultSet.getInt(1));
 			String hashedPassword = resultSet.getNString(2);
 			isCorrectCredential = BCrypt.checkpw(unhashedPassword, hashedPassword);
 		}
