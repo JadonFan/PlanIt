@@ -2,7 +2,7 @@
 .gradle
 
 # Ignore the Java bytecode files
-/bin/
+/bin
 
 # Ignore the default IDE configuration files 
 /.externalToolBuilders/

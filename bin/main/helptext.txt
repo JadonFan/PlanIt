@@ -1,2 +1,0 @@
-help 0
-The UI is constantly improving!
