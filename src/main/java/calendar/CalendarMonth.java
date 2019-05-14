@@ -5,6 +5,7 @@ import java.util.GregorianCalendar;
 
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class CalendarMonth implements MonthPaneI {
 	private Calendar jCal;
@@ -58,7 +59,7 @@ public class CalendarMonth implements MonthPaneI {
 	
 	// See https://docs.oracle.com/javase/7/docs/api/constant-values.html
 	@Override
-	public GridPane buildCalendarMonthPane() {
+	public GridPane buildCalendarMonthPane(Stage window) {
 		final int daysInMonth = this.jCal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		// tracks the date in the calendar currently being examined, starting from the first date of the specified month 
 		final Calendar trackedDate = new GregorianCalendar(this.jCal.get(Calendar.YEAR), this.jCal.get(Calendar.MONTH), 1);
@@ -67,15 +68,15 @@ public class CalendarMonth implements MonthPaneI {
 									         // with the the size of the parent pane (in this case, the scroll pane)
 		monthPane.setGridLinesVisible(true);
 		
-		int weekInMonthCount = 1;
-		int dayInWeekCount = trackedDate.get(Calendar.DAY_OF_WEEK);
+		int weekInMonthCount = 1; 
+		int dayInWeekCount = trackedDate.get(Calendar.DAY_OF_WEEK); // get the day of the week that the first date of the month lies on
 
 		for (int i = 0; i < daysInMonth; i++) {	 
-			StackPane dayPane = new CalendarDay(trackedDate).buildCalendarDayPane();
+			// Bad things can happen if you don't make a shallow copy of trackedDate
+			StackPane dayPane = new CalendarDay((Calendar) trackedDate.clone()).buildCalendarDayPane(window);
 			trackedDate.roll(Calendar.DAY_OF_MONTH, 1);
 			
-			GridPane.setConstraints(dayPane, dayInWeekCount - 1, weekInMonthCount - 1);
-			monthPane.getChildren().add(dayPane);
+			monthPane.add(dayPane, dayInWeekCount - 1, weekInMonthCount - 1);
 						
 			dayInWeekCount += 1;
 			if (dayInWeekCount > 7) {				

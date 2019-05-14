@@ -37,8 +37,9 @@ public class ImageDaoImpl implements ImageDao {
 	
 	
 	@Override
-	public void addImage(Connection con, File file) throws SQLException, IOException {
-    	Image image = new Image(file.toURI().toString(), 100, 100, true, true);
+	// I'll switch over to Amazon S3 to store the images in buckets, which should improve the image resolution
+	public ImageView addImage(Connection con, File file) throws SQLException, IOException {
+    	Image image = new Image(file.toURI().toString(), 1000, 1000, true, true);
 		String encodedBase64 = Base64.getEncoder().encodeToString(Files.readAllBytes(Paths.get(file.toURI())));
 		
 		PreparedStatement pstmt = con.prepareStatement("INSERT INTO image_gallery VALUES(? , ?)");
@@ -46,9 +47,11 @@ public class ImageDaoImpl implements ImageDao {
 		pstmt.setInt(2, AppSession.getStudentId());
 		
 		pstmt.execute();
-		this.imageViews.add(new ImageView(image));
+		ImageView iv = new ImageView(image);
+		this.imageViews.add(iv);
 		
 		pstmt.close();
+		return iv;
 	}
 	
 	

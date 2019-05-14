@@ -229,9 +229,7 @@ public class MyCourses {
 		};
 		Predicate<String> isProperFormat = str -> Pattern.matches(Course.COURSE_IDENTIFIER_REGEX, str);
 		crsText.configEditActions(isProperFormat, onEnterFunc);
-		Rectangle rect = new Rectangle();
-		rect.setWidth(this.window.getWidth() - 200);
-		
+
 		Button addAstmtBtn = new Button("Add Astmt");
 		addAstmtBtn.setOnAction(event -> {
 			try {
@@ -271,6 +269,8 @@ public class MyCourses {
 		crsDet.skinAssessmentPane(vb);
 		
 		StackPane coursePane = new StackPane();
+		Rectangle rect = new Rectangle();
+		rect.setWidth(this.window.getWidth() - 200);
 		coursePane.getChildren().addAll(rect, vb);
 		// Move to a css file
 		coursePane.setStyle("-fx-border-color: black; \n" +

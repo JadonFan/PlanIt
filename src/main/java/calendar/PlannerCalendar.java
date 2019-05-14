@@ -3,7 +3,6 @@ package calendar;
 import java.util.Calendar;
 import java.util.Locale;
 
-import ui.CommonButtonFactory;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import ui.CommonButtonFactory;
 
 public class PlannerCalendar {	
 	public void display(Stage window) {
@@ -35,7 +35,7 @@ public class PlannerCalendar {
 		CheckBox examFilter = new CheckBox("Exam");
 
 		// calendar visual
-		GridPane calPane = calendarMonth.buildCalendarMonthPane();
+		GridPane calPane = calendarMonth.buildCalendarMonthPane(window);
 		ScrollPane calLayout = new ScrollPane(calPane);
 		calLayout.setFitToWidth(true);
 		calLayout.setFitToHeight(true);

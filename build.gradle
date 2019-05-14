@@ -52,7 +52,7 @@ dependencies {
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
     
-	compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.16'
+	compile 'mysql:mysql-connector-java:8.0.16'
     runtime "mysql:mysql-connector-java:8.0.16"
         
     compile 'org.mindrot:jbcrypt:0.4'
@@ -71,11 +71,16 @@ dependencies {
     compile 'com.google.apis:google-api-services-gmail:v1-rev103-1.25.0'
     compile 'com.google.apis:google-api-services-oauth2:v2-rev150-1.25.0'
     compile 'com.google.http-client:google-http-client-jackson2:1.29.1'
+    compile 'com.google.code.gson:gson:2.8.5'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.9.8'    
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
    	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'    
    	compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.9.13'
     compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.8'
+            
+    implementation 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    testCompile group: 'junit', name: 'junit', version: '4.11'
 }
 
 
