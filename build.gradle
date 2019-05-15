@@ -13,6 +13,7 @@ buildscript {
     dependencies {
         classpath 'com.github.rholder:gradle-one-jar:1.0.4'
         classpath 'com.github.jengelman.gradle.plugins:shadow:5.0.0'
+        // classspath 'org.springframework.boot:spring-boot-gradle-plugin:2.1.4.RELEASE'
     }
 }
 
@@ -26,12 +27,14 @@ plugins {
     id 'eclipse'
     
     id 'application'
-    
-    id 'project-report'
+        
+    id 'org.springframework.boot' version '2.1.4.RELEASE'
 }
 
 apply plugin: 'gradle-one-jar'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
 
 repositories {
@@ -63,6 +66,8 @@ dependencies {
     compile 'org.hibernate:hibernate-entitymanager:5.4.2.Final'
    	compile 'org.hibernate:hibernate-osgi:5.4.2.Final'
     
+    compile 'com.google.code.gson:gson:2.8.5'
+    /*
     compile 'com.google.api-client:google-api-client:1.28.0'
     compile 'com.google.api-client:google-api-client-java6:1.28.0'
     compile 'com.google.api-client:google-api-client-servlet:1.28.0'
@@ -77,15 +82,32 @@ dependencies {
    	compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.8'    
    	compile group: 'org.codehaus.jackson', name: 'jackson-core-asl', version: '1.9.13'
     compile group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.9.8'
-            
-    implementation 'com.amazonaws:aws-java-sdk-bom:1.11.228'
-    implementation 'com.amazonaws:aws-java-sdk-s3'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
+    */
+    
+    // implementation 'com.amazonaws:aws-java-sdk-bom:1.11.228'
+    // implementation 'com.amazonaws:aws-java-sdk-s3'
+    // testCompile group: 'junit', name: 'junit', version: '4.11'
+    
+    compile 'org.springframework.boot:spring-boot-starter-parent:2.1.4.RELEASE'
+    runtime 'org.springframework.boot:spring-boot-starter-parent:2.1.4.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
+    runtime 'org.springframework.boot:spring-boot-starter-web:2.1.4.RELEASE'
+    
+    compile 'org.apache.httpcomponents:httpcore:4.4.1'
+	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.8'
+	
+	compile 'javax.mail:mail:1.5.0-b01'
 }
 
 
 configurations.all {
     exclude group: 'org.jboss.spec.javax.transaction', module: 'jboss-transaction-api_1.2_spec'
+}
+
+
+configurations {
+	// There is a conflicting servlet context class that doesn't contain a particular method required by Spring Boot 
+    provided.all*.exclude group: 'javax.servlet'  
 }
 
 
@@ -120,3 +142,8 @@ jar {
         attributes 'Main-Class': 'home.LogIn'
     }
 }
+
+springBoot {
+    mainClassName = 'api.PlannerApi'
+}
+

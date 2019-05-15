@@ -237,9 +237,7 @@ public class MyCourses {
 				new AssessmentDaoImpl(crsDet).loadAssessments(PlannerDb.getConnection());
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
-			
-			event.consume();
+			}			
 		});
 		
 		Button deleteCourseBtn = new Button("Remove Course");
@@ -250,8 +248,6 @@ public class MyCourses {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			
-			event.consume();
 		});
 		
 		Pane spacer = new Pane();
@@ -275,7 +271,7 @@ public class MyCourses {
 		// Move to a css file
 		coursePane.setStyle("-fx-border-color: black; \n" +
 							"-fx-border-insets: 5; \n" +
-							"-fx-border-width: 2; \n"); //$NON-NLS-1$
+							"-fx-border-width: 2;"); //$NON-NLS-1$
 		
 		return coursePane;	
 	}

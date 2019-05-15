@@ -7,7 +7,7 @@ import javax.persistence.EntityManagerFactory;
 
 public class PlannerDb {
 	private static Connection connection;
-	private static EntityManagerFactory ENTITY_MANAGER_FACTORY;
+	private static EntityManagerFactory emf;
 	
 
 	public static Connection getConnection() {
@@ -20,10 +20,10 @@ public class PlannerDb {
 
 	
 	public static EntityManagerFactory getEntityManagerFactory() {
-		return ENTITY_MANAGER_FACTORY;
+		return emf;
 	}
 
-	public static void setEntityManagerFactory(EntityManagerFactory ENTITY_MANAGER_FACTORY) {
-		PlannerDb.ENTITY_MANAGER_FACTORY = ENTITY_MANAGER_FACTORY;
+	public static void setEntityManagerFactory(EntityManagerFactory emf) {
+		PlannerDb.emf = emf;
 	}
 }

@@ -102,7 +102,7 @@ public class Help {
 				descripLabel.setText(Help.getHelpText(selectResult));
 			});
 		
-		Button backButton = CommonButtonFactory.buildBackToHomeButton(window);
+		Button backButton = CommonButtonFactory.buildBackToHomeButton();
 		
 		BorderPane borderPane = new BorderPane();
 		borderPane.setLeft(this.tree);

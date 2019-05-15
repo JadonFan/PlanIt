@@ -32,7 +32,7 @@ public class MainSettings {
 		timezoneBox.getChildren().addAll(timezoneLabel, timezoneChoice);
 		
 		Button backBtn = new Button("Back to Home");
-		backBtn.setOnAction(event -> Home.display(window));
+		backBtn.setOnAction(event -> Home.getInstance().display());
 		
 		VBox layout = new VBox(10);
 		layout.setPadding(new Insets(25));

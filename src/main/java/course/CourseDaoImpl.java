@@ -56,12 +56,13 @@ public class CourseDaoImpl implements CourseDao {
 	
 	@Override
 	public void addCourse(Connection con, Course crsDet) throws SQLException {				
-		PreparedStatement pstmt = con.prepareStatement("INSERT INTO my_courses VALUES(? , ? , ? , ?, ?)"); //$NON-NLS-1$
+		PreparedStatement pstmt = con.prepareStatement("INSERT INTO my_courses VALUES(? , ? , ? , ? , ? , ?)"); //$NON-NLS-1$
 		pstmt.setInt(1, crsDet.getCrsNo());
 		pstmt.setNString(2, crsDet.getSubject());
 		pstmt.setShort(3, crsDet.getCode());
 		pstmt.setNString(4, crsDet.getTitle());
-		pstmt.setInt(5, AppSession.getStudentId());
+		pstmt.setInt(5, -1);
+		pstmt.setInt(6, AppSession.getStudentId());
 				
 		this.courses.add(crsDet);
 		pstmt.execute();
@@ -97,7 +98,6 @@ public class CourseDaoImpl implements CourseDao {
 	
 	@Override
 	public boolean deleteCourse(Connection con, Course course) throws SQLException {
-		// TODO add a deletion guard 
 		// TODO call the deleteAssessment(Connection, Assessment) method in the Course class once that method
 		// has been implemented
 		PreparedStatement pstmt = con.prepareStatement("DELETE FROM assessments WHERE course_number = ?"); //$NON-NLS-1$
@@ -105,7 +105,6 @@ public class CourseDaoImpl implements CourseDao {
 		pstmt.execute();
 		pstmt.close();
 		
-		// TODO add a deletion guard 
 		pstmt = con.prepareStatement("DELETE FROM my_courses WHERE course_number = ?"); //$NON-NLS-1$
 		pstmt.setInt(1, course.getCrsNo());
 		boolean isExecuted = pstmt.execute();

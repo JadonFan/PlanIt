@@ -3,11 +3,12 @@ package course;
 import java.util.Calendar;
 import java.util.Locale;
 
+import calendar.Event;
 import javafx.scene.paint.Color;
 import utility.CommonUtils;
 import utility.DateUtils;
 
-public abstract class Assessment {
+public abstract class Assessment implements Event {
 	private int id;
 	private String name;
 	private int loggedStudyMinutes;
@@ -29,18 +30,22 @@ public abstract class Assessment {
 	}
 	
 	
+	@Override
 	public int getId() {
 		return this.id;
 	}
 
+	@Override
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	@Override
 	public String getName() {
 		return this.name;
 	}
 
+	@Override
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -113,7 +118,7 @@ public abstract class Assessment {
 		return typeId;
 	}
 	
-	
+	@Override
 	public int findRemainingDays() {
 		return (int) ((this.dueDate.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()) / (1000 * 60 * 60 * 24));
 	}
@@ -129,6 +134,7 @@ public abstract class Assessment {
 	}
 	
 	
+	@Override
 	public String reprDue() {
 		Locale locale = Locale.getDefault();
 		
@@ -136,9 +142,9 @@ public abstract class Assessment {
 		String dueDate = CommonUtils.getOrderWithSuffix(this.dueDate.get(Calendar.DAY_OF_MONTH));
 		String dueTime = DateUtils.reprHourMinutes(this.dueDate);
 		int remainingDays = this.findRemainingDays();
-		String dayUnit = Math.abs(remainingDays) > 1 ? " days" : " day";
+		String dayUnit = Math.abs(remainingDays) > 1 ? "days" : "day";
 		
-		return String.format("Due: %s %s (%s) at %s", dueMonth, dueDate, Integer.toString(remainingDays).concat(dayUnit), dueTime);
+		return String.format("Due: %s %s (%d %s) at %s", dueMonth, dueDate, remainingDays, dayUnit, dueTime);
 	}
 	
 	

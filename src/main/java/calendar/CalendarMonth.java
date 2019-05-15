@@ -7,7 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class CalendarMonth implements MonthPaneI {
+public class CalendarMonth {
 	private Calendar jCal;
 	
 	
@@ -34,31 +34,24 @@ public class CalendarMonth implements MonthPaneI {
 	 * <p>
 	 * Using the Calendar's {@code roll(int, int)} method directly on the {@code currentCal} parameter might 
 	 * cause some unexpected changes to {@code currentCal} elsewhere in the codebase
-	 * @param currentCal the calendar object with the current date
 	 * @param up positive to roll up the month of {@code currentCal} by 1, 0 to not roll, negative to roll down the month by 1
-	 * @return a clone of the currentCal after the roll is completed
 	 */
-	public static Calendar findNeighbourCal(final Calendar currentCal, int up) {
-		Calendar neighbourCal = (Calendar) currentCal.clone();  // A potentially expensive operation, but works for all subclasses of 
-															    // calendars that extend Java's Calendar abstract class
+	public void moveToNeighbourCal(int up) {
 		up = Integer.signum(up); // To help avoid errors, we'll only roll the calendar up or down by one "unit" (month/year)
 		
-		if (neighbourCal.get(Calendar.MONTH) == 0 && up == -1) {
-			neighbourCal.roll(Calendar.YEAR, -1);
-			neighbourCal.set(Calendar.MONTH, 11);
-		} else if (neighbourCal.get(Calendar.MONTH) == 11 && up == 1) {
-			neighbourCal.roll(Calendar.YEAR, 1);
-			neighbourCal.set(Calendar.MONTH, 0);
+		if (this.jCal.get(Calendar.MONTH) == 0 && up == -1) {
+			this.jCal.roll(Calendar.YEAR, -1);
+			this.jCal.set(Calendar.MONTH, 11);
+		} else if (this.jCal.get(Calendar.MONTH) == 11 && up == 1) {
+			this.jCal.roll(Calendar.YEAR, 1);
+			this.jCal.set(Calendar.MONTH, 0);
 		} else {
-			neighbourCal.roll(Calendar.MONTH, up);
-		}
-		
-		return neighbourCal;
+			this.jCal.roll(Calendar.MONTH, up);
+		}		
 	}
 	
 	
 	// See https://docs.oracle.com/javase/7/docs/api/constant-values.html
-	@Override
 	public GridPane buildCalendarMonthPane(Stage window) {
 		final int daysInMonth = this.jCal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		// tracks the date in the calendar currently being examined, starting from the first date of the specified month 
@@ -73,7 +66,7 @@ public class CalendarMonth implements MonthPaneI {
 
 		for (int i = 0; i < daysInMonth; i++) {	 
 			// Bad things can happen if you don't make a shallow copy of trackedDate
-			StackPane dayPane = new CalendarDay((Calendar) trackedDate.clone()).buildCalendarDayPane(window);
+			StackPane dayPane = new CalendarDay((Calendar) trackedDate.clone()).buildCalendarDayPane(window, this);
 			trackedDate.roll(Calendar.DAY_OF_MONTH, 1);
 			
 			monthPane.add(dayPane, dayInWeekCount - 1, weekInMonthCount - 1);

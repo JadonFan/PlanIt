@@ -31,7 +31,7 @@ public class CourseForm {
 	private boolean hasErroneousFields(TextField[] textFields) {
 		Set<TextField> erroneousFields = new HashSet<>();
 
-		// TODO in a separate method, change the border of a erroneous text field to red.		
+		// TODO in a separate method, change the border of a erroneous text field to red
 		TextField crsNoField = textFields[0];
 		if (CommonUtils.isEmptyOrNull(crsNoField.getText())) {
 			new ErrorBox("Invalid Input: The course number cannot be empty");

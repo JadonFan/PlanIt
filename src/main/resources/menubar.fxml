@@ -6,9 +6,14 @@
 <?import javafx.scene.layout.*?>
 <?import java.net.*?>
 
-<VBox id="vBox" prefHeight="400" prefWidth="800" xmlns:fx="http://javafx.com/fxml" fx:controller="home.MenuController">
+<VBox id="menuLayoutBox" fx:id="menuLayoutBox" xmlns:fx="http://javafx.com/fxml" fx:controller="home.MenuController">
    <MenuBar fx:id="menuBar">
       <menus>
+      	<Menu text="Home">
+         	<items>
+         		<MenuItem text="Home" onAction="#loadHome"/>
+         	</items>
+         </Menu>
          <Menu text="Schedules">
          	<items>
          		<MenuItem text="Calendar" onAction="#loadCalendar"/>

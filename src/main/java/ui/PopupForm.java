@@ -114,6 +114,7 @@ public class PopupForm {
 	
 	
 	// TODO change to set the scene width instead
+	@Deprecated
 	public void mapLayout(Stage window, List<Pair<Label, Control>> extraControls) {
 		window.setWidth(350);
 		

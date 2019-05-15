@@ -8,7 +8,6 @@ import java.util.Properties;
 
 import alerts.ErrorBox;
 import application.PlannerDb;
-import application.WindowManager;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,9 +22,8 @@ import javafx.stage.Stage;
 
 public class LogIn extends Application {
 	public void display(Stage window) {
-		WindowManager.setPrimaryWindow(window);
-		WindowManager.getPrimaryWindow().setWidth(500);
-		WindowManager.getPrimaryWindow().setHeight(500);
+		window.setWidth(500);
+		window.setHeight(500);
 		window.setTitle("Planner by Jadon");
 		
 		GridPane signInPane = new GridPane();
@@ -60,7 +58,8 @@ public class LogIn extends Application {
 			try {
 				if (new LogInDaoImpl().isCorrectCredentials(PlannerDb.getConnection(), username, password)) {
 					System.out.println(">> An user has logged in");
-					Home.display(window);
+					Home.getInstance(new Stage()).display();
+					window.close();
 				} else {
 					System.out.println(">> An user attempted to log in, but entered incorrect credentials");
 					ErrorBox errorBox = new ErrorBox("Wrong username or password! Please try again.");
@@ -74,7 +73,7 @@ public class LogIn extends Application {
 		
 		Button registerButton = new Button("Register");
 		registerButton.setOnAction(event -> {
-			new RegistrationForm().display();
+			new AccountRegistrationForm().display();
 			System.out.println(">> An user has registered an account");
 		});
 		logInBar.getChildren().add(registerButton);
@@ -100,19 +99,19 @@ public class LogIn extends Application {
 			Properties logInProperties = new Properties();
 			logInProperties.load(inStream);
 
-			String username = logInProperties.getProperty("username"); //$NON-NLS-1$
-			String password = logInProperties.getProperty("password"); //$NON-NLS-1$
+			String dbUser = logInProperties.getProperty("username"); //$NON-NLS-1$
+			String dbPass = logInProperties.getProperty("password"); //$NON-NLS-1$
 			
 			// PlannerDb.setEntityManagerFactory(Persistence.createEntityManagerFactory("Planner"));
 	        Class.forName("com.mysql.cj.jdbc.Driver");
 	       
 	       
 			PlannerDb.setConnection(DriverManager.getConnection("jdbc:mysql://localhost:3306/planner?useUnicode=" + "true&use"
-					+ "JDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", username, password)); //$NON-NLS-1$
+					+ "JDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", dbUser, dbPass)); //$NON-NLS-1$
 	        
 			/*
 			PlannerDb.setConnection(DriverManager.getConnection("jdbc:mysql://planner.cljnz1x2e9qg.us-east-2.rds.amazonaws.com:3306/planner?useUnicode="
-					+ "true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", username, password)); //$NON-NLS-1$
+					+ "true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", dbUser, dbPass)); //$NON-NLS-1$
 			*/
 		} catch (IOException | SQLException | ClassNotFoundException e) {
 			e.printStackTrace();

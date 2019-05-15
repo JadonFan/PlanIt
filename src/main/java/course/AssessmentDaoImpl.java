@@ -41,12 +41,7 @@ public class AssessmentDaoImpl implements AssessmentDao {
 		pstmt.close();
 	}
 	
-	
-	// XXX Debating on whether to use:
-	// A single FULL OUTER JOIN query (with MySQL, LEFT JOIN + UNION + RIGHT JOIN) to load all assessments at once; or
-	// A single SELECT query for each "assessment-related" table to load the assessments within each type separately; or
-	// A common table, called assessment, in the database for all assessment types 
-	// *** For now, we'll follow the 3rd option ***
+
 	@Override
 	public void loadAssessments(Connection con) throws SQLException {
 		PreparedStatement pstmt = con.prepareStatement("SELECT astmt_id, astmt_name, due_date, weighting, astmt_type "
