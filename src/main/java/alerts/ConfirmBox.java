@@ -12,23 +12,37 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class ConfirmBox extends AlertBox {
+	private Stage window;
+
 	private String boxTitle;
 	private String boxText;
 	private boolean isConfirmed;
-
+	
 	
 	public ConfirmBox(String boxText) {
+		this.window = new Stage();
 		this.boxTitle = "Confirm Changes";
 		this.boxText = boxText;
 	}
 	
 	public ConfirmBox(String boxTitle, String boxText) {
+		this.window = new Stage();
+		this.boxTitle = boxTitle;
+		this.boxText = boxText;
+	}
+	
+	public ConfirmBox(Stage window, String boxTitle, String boxText) {
+		this.window = window;
 		this.boxTitle = boxTitle;
 		this.boxText = boxText;
 	}
 	
 	
-	public String getBoxText() {
+	public Stage getWindow() {
+		return this.window;
+	}
+	
+ 	public String getBoxText() {
 		return this.boxText;
 	}
 
@@ -50,10 +64,9 @@ public class ConfirmBox extends AlertBox {
 
 	
 	public boolean display() {		
-		Stage window = new Stage();
-		window.initModality(Modality.APPLICATION_MODAL);
-		window.setTitle(this.boxTitle);
-		window.setMinWidth(250);
+		this.window.initModality(Modality.APPLICATION_MODAL);
+		this.window.setTitle(this.boxTitle);
+		this.window.setMinWidth(250);
 		
 		Label label = new Label(this.boxText);
 		
@@ -61,13 +74,13 @@ public class ConfirmBox extends AlertBox {
 		super.setBtnEnterHandler(yesBtn);
 		yesBtn.setOnAction(event -> {
 			this.isConfirmed = true;
-			window.close();
+			this.window.close();
 		});
 		Button noBtn = new Button("No");
 		super.setBtnEnterHandler(noBtn);
 		noBtn.setOnAction(event -> {
 			this.isConfirmed = false;
-			window.close();
+			this.window.close();
 		});
 		
 		VBox layout1 = new VBox(10);
@@ -85,8 +98,8 @@ public class ConfirmBox extends AlertBox {
 		borderPane.setBottom(layout2);
 		
 		Scene scene = new Scene(borderPane);
-		window.setScene(scene);
-		window.showAndWait();
+		this.window.setScene(scene);
+		this.window.showAndWait();
 		
 		return this.isConfirmed;
 	}

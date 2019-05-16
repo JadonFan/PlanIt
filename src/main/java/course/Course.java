@@ -1,33 +1,27 @@
 package course;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import application.PlannerDb;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
+import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Service
 public class Course implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private int crsNo; // primary key
-	private String subject;
-	private short code;
-	private String title;
+	private String subject; // TODO rename to crsSubject
+	private short code;     // TODO rename to crsCode
+	private String title;   // TODO rename to crsTitle
 	private float priority = -1;
 	
 	private List<Assessment> assessments = Collections.synchronizedList(new ArrayList<>());
+	@JsonIgnore
 	public static final String COURSE_IDENTIFIER_REGEX = "^([a-zA-Z]{2,})(\\d{3})$"; //$NON-NLS-1$
 	
 	
@@ -36,7 +30,7 @@ public class Course implements Serializable {
 	public Course(int crsNo, String subject, short code, String title) {
 		this.crsNo = crsNo;
 		this.subject = subject;
-		this.code = code;  // Note: subject + code = course identifier 
+		this.code = code;  // Note: subject + code = course name 
 		this.title = title;
 	}
 	
@@ -131,47 +125,6 @@ public class Course implements Serializable {
 	}
 	
 	
-	public void skinAssessmentPane(VBox vb) {
-		vb.setPadding(new Insets(15));
-		vb.setAlignment(Pos.CENTER_LEFT);
-		
-		for (Assessment astmt : this.assessments) {
-			GridPane astmtPane = new GridPane();
-			astmtPane.setHgap(30);
-			
-			Text astmtNameText = new Text(String.format("%s (%s)", astmt.getName(), astmt.getClass().getSimpleName()));
-			astmtNameText.setFont(Font.font("Verdana", FontWeight.BOLD, 13));
-			astmtPane.add(astmtNameText, 0, 0); // Set assessment name
-			
-			HBox astmtDetailBox = new HBox();
-			astmtDetailBox.setSpacing(10);
-			Text separatorText = new Text("|");			
-			Text dueText = new Text(astmt.reprDue());
-			Text weightingText = new Text(astmt.reprWeighting());
-			// Text gradeText = new Text(Float.toString(astmt.getGrade()));	
-			astmtDetailBox.getChildren().addAll(dueText, separatorText, weightingText);
-			astmtPane.add(astmtDetailBox, 0, 1);
-
-			Button removeAstmtBtn = new Button("REMOVE");
-			removeAstmtBtn.setVisible(false);
-			removeAstmtBtn.setOnAction(event -> {
-				try {
-					new AssessmentDaoImpl(this).deleteAssessment(PlannerDb.getConnection(), astmt);
-					// astmtDetailBox.getChildren().removeAll(dueText, separatorText, weightingText);
-					vb.getChildren().removeAll(astmtPane);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			});
-			astmtPane.setOnMouseEntered(event -> removeAstmtBtn.setVisible(true));
-			astmtPane.setOnMouseExited(event -> removeAstmtBtn.setVisible(false));
-			astmtPane.add(removeAstmtBtn, 1, 0);
-
-			vb.getChildren().addAll(astmtPane);
-		}
-	}
-	
-	
 	/**
 	 * Prepares the display string for all the assessments of a particular type for the specified course.
 	 * <p>
@@ -189,7 +142,7 @@ public class Course implements Serializable {
 	
 	
 	/**
-	 * Overrides the toString() method in the Object class, and returns the course identifier (subject + code)
+	 * Overrides the toString() method in the Object class, and returns the name of the course (subject + code)
 	 * @return The primary string to display for the course
 	 */
 	@Override

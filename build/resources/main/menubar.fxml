@@ -12,6 +12,7 @@
       	<Menu text="Home">
          	<items>
          		<MenuItem text="Home" onAction="#loadHome"/>
+         		<MenuItem text="Email" onAction="#loadEmailForm"/>
          	</items>
          </Menu>
          <Menu text="Schedules">
@@ -27,6 +28,7 @@
          </Menu>
          <Menu text="Properties">
          	<items>
+         		<MenuItem text="Account"/>
          		<MenuItem text="Settings" onAction="#loadSettings"/>
          		<MenuItem text="Help" onAction="#loadHelp"/>
          		<SeparatorMenuItem  />

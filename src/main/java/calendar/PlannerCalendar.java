@@ -1,9 +1,13 @@
 package calendar;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Locale;
 
+import home.Home;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -15,7 +19,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ui.CommonButtonFactory;
 
 public class PlannerCalendar {	
 	public String reprCalTitle(CalendarMonth calendarMonth) {
@@ -33,16 +36,24 @@ public class PlannerCalendar {
 	public void display(Stage window, CalendarMonth calendarMonth) {
 		window.setTitle("Calendar");
 		
-		// page layout
-		VBox pageLayoutBox = new VBox(10);
-		pageLayoutBox.setPadding(new Insets(25));
+		VBox pageLayoutBox = new VBox(10);		
+		try {
+			Parent menuBar = FXMLLoader.load(Home.class.getResource("/menubar.fxml")); //$NON-NLS-1$
+			pageLayoutBox.getChildren().add(menuBar);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 		
 		
-		pageLayoutBox.getChildren().add(CommonButtonFactory.buildBackToHomeButton());
-		
+		VBox calContainerBox = new VBox();
+		calContainerBox.setPadding(new Insets(25));
+
 		ScrollPane calPane = new ScrollPane(calendarMonth.buildCalendarMonthPane(window));
 		calPane.setFitToWidth(true);
 		calPane.setFitToHeight(true);
-		pageLayoutBox.getChildren().addAll(this.buildCalTitleBox(calendarMonth, calPane, window), calPane);
+		
+		HBox calTitleBox = this.buildCalTitleBox(calendarMonth, calPane, window);
+		calContainerBox.getChildren().addAll(calTitleBox, calPane);
+		pageLayoutBox.getChildren().add(calContainerBox);
 		
 		Scene scene = new Scene(pageLayoutBox);
 		window.setScene(scene);

@@ -75,16 +75,25 @@ public class PopupForm {
 	}
 	
 	
-	public static void skinFormLayout(VBox vb, GridPane gp, Stage window) {
-		vb.setPadding(new Insets(5));
-		vb.setSpacing(5);
-		vb.setAlignment(Pos.CENTER);
-		vb.prefWidthProperty().bind(window.widthProperty());
-		
+	public static void skinGridPane(GridPane gp) {		
 		gp.setVgap(10);
 		gp.setHgap(10);
 		gp.setAlignment(Pos.CENTER);
 		gp.setPadding(new Insets(25));
+	}
+	
+	
+	public static void skinFormBox(VBox vb, Stage window) {
+		vb.setPadding(new Insets(5));
+		vb.setSpacing(5);
+		vb.setAlignment(Pos.CENTER);
+		vb.prefWidthProperty().bind(window.widthProperty());
+	}
+	
+	
+	public static void skinOverallLayout(GridPane gp, VBox vb, Stage window) {
+		PopupForm.skinGridPane(gp);
+		PopupForm.skinFormBox(vb, window);
 	}
 	
 	
@@ -119,7 +128,7 @@ public class PopupForm {
 		window.setWidth(350);
 		
 		GridPane formPane = new GridPane();
-		PopupForm.skinFormLayout(this.formBox, formPane, window);
+		PopupForm.skinOverallLayout(formPane, this.formBox, window);
 		this.mapPaneToPanels(formPane, extraControls);
 		
 		this.formBox.getChildren().add(formPane);

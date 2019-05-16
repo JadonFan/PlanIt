@@ -19,6 +19,7 @@ import com.jfoenix.controls.JFXTimePicker;
 
 import alerts.ErrorBox;
 import application.PlannerDb;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -31,7 +32,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import ui.CommonToggleGroupFactory;
 import ui.CommonUi;
 import ui.PopupForm;
 
@@ -42,6 +42,11 @@ public class AssessmentForm {
 	private static final Map<AssessmentType, List<Label>> labelMap = new HashMap<>();	
 	private static final String[] LABEL_TEXTS = new String[] {"Name", "Weight", "Component", "Submission Method", "Location"}; 
 
+	private TextField[] textFields = new TextField[LABEL_TEXTS.length];
+	private JFXDatePicker datePicker;
+	private JFXTimePicker timePicker;
+	private ToggleGroup astmtTypeToggleGrp;
+	
 	
 	static {
 		for (String labelText : LABEL_TEXTS) {
@@ -81,68 +86,81 @@ public class AssessmentForm {
 	}
 	
 	
-	public void display(MyCourses myCourses, Course course) {	
-		this.window.setWidth(400);
-		TextField[] textFields = new TextField[LABEL_TEXTS.length];
-		
-		VBox formBoxLayout = new VBox();
-		GridPane formPane = new GridPane();
-		PopupForm.skinFormLayout(formBoxLayout, formPane, this.window);
-				
-		Text selectToggleText = new Text("1. Select the type of assessment");
-		formBoxLayout.getChildren().add(selectToggleText);
-		
-		ToggleGroup group = new ToggleGroup();
-		group.selectedToggleProperty().addListener((change, oldToggle, currToggle) -> {
+	public GridPane buildAstmtTypeTogglePane() {		
+		this.astmtTypeToggleGrp = new ToggleGroup();
+		this.astmtTypeToggleGrp.selectedToggleProperty().addListener((change, oldToggle, currToggle) -> {
 			AssessmentType astmtType = AssessmentType.valueOf(((RadioButton) currToggle).getText()); 
-			CommonUi.disableUnusedFields(AssessmentForm.labelMap.getOrDefault(astmtType, null), AssessmentForm.labels, textFields);
+			CommonUi.disableUnusedFields(AssessmentForm.labelMap.getOrDefault(astmtType, null), AssessmentForm.labels, this.textFields);
 		});
-		Pair<GridPane, RadioButton[]> astmtTypeBtns = CommonToggleGroupFactory.buildStdRadioGrp(group, AssessmentType.reprAllAstmtTypes());
-		formBoxLayout.getChildren().add(astmtTypeBtns.getKey());
 		
-		Separator separator = new Separator();
-		Text enterValueText = new Text("2. Enter the details for this assessment");
-		formBoxLayout.getChildren().addAll(separator, enterValueText);
+		Pair<GridPane, RadioButton[]> astmtTypeBtns = CommonUi.buildStdRadioGrp(this.astmtTypeToggleGrp, AssessmentType.reprAllAstmtTypes());
+		PopupForm.skinGridPane(astmtTypeBtns.getKey());
+		astmtTypeBtns.getKey().setAlignment(Pos.CENTER_LEFT);
+		
+		return astmtTypeBtns.getKey();
+	}
+	
+	
+	public GridPane buildAstmtDetailPane() {
+		GridPane astmtDetailPane = new GridPane();
+		PopupForm.skinGridPane(astmtDetailPane);
 		
 		for (int i = 0; i < LABEL_TEXTS.length; i++) {
 			Label label = new Label(LABEL_TEXTS[i]);
-			formPane.add(label, 0, i);
+			astmtDetailPane.add(label, 0, i);
 			TextField textField = new TextField();
-			formPane.add(textField, 1, i);
-			textFields[i] = textField;
+			astmtDetailPane.add(textField, 1, i);
+			this.textFields[i] = textField;
 		}
 		
-		Label dateLbl = new Label("Date");
-		formPane.add(dateLbl, 0, LABEL_TEXTS.length);
-		JFXDatePicker datePicker = new JFXDatePicker();
-		formPane.add(datePicker, 1, LABEL_TEXTS.length);
+		Label dateLabel = new Label("Date");
+		this.datePicker = new JFXDatePicker();
+		astmtDetailPane.add(dateLabel, 0, LABEL_TEXTS.length);
+		astmtDetailPane.add(this.datePicker, 1, LABEL_TEXTS.length);
 		
-		Label timeLbl = new Label("Time");
-		formPane.add(timeLbl, 0, LABEL_TEXTS.length + 1);
-		JFXTimePicker timePicker = new JFXTimePicker();
-		timePicker.set24HourView(true);
-		formPane.add(timePicker, 1, LABEL_TEXTS.length + 1);
+		Label timeLabel = new Label("Time");
+		this.timePicker = new JFXTimePicker();
+		this.timePicker.set24HourView(true);
+		astmtDetailPane.add(timeLabel, 0, LABEL_TEXTS.length + 1);
+		astmtDetailPane.add(this.timePicker, 1, LABEL_TEXTS.length + 1);
 		
-		formBoxLayout.getChildren().add(formPane);
+		return astmtDetailPane;
+	}
+	
+	
+	public void display(MyCourses myCourses, Course course) {	
+		this.window.setWidth(400);
+				
+		VBox formLayoutBox = new VBox();
+		PopupForm.skinFormBox(formLayoutBox, this.window);
+		
+		Text selectToggleText = new Text("1. Select the type of assessment");
+		formLayoutBox.getChildren().add(selectToggleText);
+		
+		GridPane astmtTypeTogglePane = this.buildAstmtTypeTogglePane();
+		formLayoutBox.getChildren().add(astmtTypeTogglePane);
+		
+		Separator separator = new Separator();
+		Text enterValueText = new Text("2. Enter the details for this assessment");
+		formLayoutBox.getChildren().addAll(separator, enterValueText);
+		
+		GridPane astmtDetailPane = this.buildAstmtDetailPane();
+		formLayoutBox.getChildren().add(astmtDetailPane);
 		
 		Button doneButton = new Button("Done");
-		formBoxLayout.getChildren().add(doneButton);
 		doneButton.setOnAction(event -> {  			
 			if (this.hasErroneousFields()) {
 				return;
 			}
 			
 			@SuppressWarnings("unused")
-			AssessmentType astmtType = null;
-			if (astmtTypeBtns.getValue().length > 0) {
-				astmtType = AssessmentType.valueOf(((RadioButton) astmtTypeBtns.getValue()[0].getToggleGroup().getSelectedToggle()).getText());
-			}
+			AssessmentType astmtType = AssessmentType.valueOf(((RadioButton) this.astmtTypeToggleGrp.getSelectedToggle()).getText());
 			
-			String astmtName = textFields[0].getText();
-			float astmtWeight = Float.parseFloat(textFields[1].getText());
+			String astmtName = this.textFields[0].getText();
+			float astmtWeight = Float.parseFloat(this.textFields[1].getText());
 			
-			String astmtDate = datePicker.getEditor().getText();
-			String astmtTime = timePicker.getEditor().getText();
+			String astmtDate = this.datePicker.getEditor().getText();
+			String astmtTime = this.timePicker.getEditor().getText();
 			Calendar jCalDueDate = new GregorianCalendar();
 			
 			try {
@@ -162,8 +180,9 @@ public class AssessmentForm {
 			myCourses.display(true);
 			event.consume();
 		});		
+		formLayoutBox.getChildren().add(doneButton);
 		
-		Scene scene = new Scene(formBoxLayout);
+		Scene scene = new Scene(formLayoutBox);
 		this.window.setScene(scene);
 		this.window.show();
 	}

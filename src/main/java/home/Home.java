@@ -6,25 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import alerts.ConfirmBox;
 import application.CloseProgram;
-import application.EmailManager2;
 import application.PlannerDb;
 import calendar.Event;
+import course.AssessmentDaoImpl;
 import course.Course;
 import course.CourseDaoImpl;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import user.AppSession;
-import utility.CommonUtils;
 
 public class Home {
 	private static volatile Home Home = null;
@@ -56,20 +52,41 @@ public class Home {
 	
 	
 	// TODO expand upon this method...
-	public String formatReminderEmailBody(StringBuilder emailBodyBuilder) {
+	public static String formatReminderEmailBody(StringBuilder emailBodyBuilder) {
 		return emailBodyBuilder.toString();
+	}
+	
+	
+	public static List<Event> findUrgentEvents() {
+		List<Event> urgentEvents = null;
+		try {
+			List<Course> courses = new ArrayList<>();
+			new CourseDaoImpl(courses).loadCourses(PlannerDb.getConnection());	
+			for (Course course : courses) {
+				if (course.getAssessments().isEmpty()) {
+					new AssessmentDaoImpl(course).loadAssessments(PlannerDb.getConnection());
+				}
+			}
+			
+			urgentEvents = courses.stream().map(x -> x.findEarliestAssessment()).collect(Collectors.toList());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return urgentEvents;
 	}
 	
 	
 	public void display() {		
 		try {
-			this.window.setTitle("Home Page -- Planner by Jadon");
-			this.window.setMinWidth(250);
-			this.window.setWidth(800);
-			this.window.setHeight(700);
+			// TODO move to the constructors
+			Home.window.setTitle("Home Page -- Planner by Jadon");
+			Home.window.setMinWidth(250);
+			Home.window.setWidth(800);
+			Home.window.setHeight(700);
 			// FIXME set this on every new stage so that, even if the user chooses "no" when asked to confirm that the
 			// user wants to quit the program, the other stages are not closed. 
-			this.window.setOnCloseRequest(event -> {
+			Home.window.setOnCloseRequest(event -> {
 				event.consume();
 				CloseProgram.closeProgram();
 			});
@@ -83,17 +100,8 @@ public class Home {
 			VBox homeLayoutBox = new VBox();
 			homeLayoutBox.setSpacing(10);
 			homeLayoutBox.setPadding(new Insets(10));
-			
-			EmailManager2 emailManager2 = new EmailManager2();
-			Button emailMeBtn = new Button("Email Me");
-			homeLayoutBox.getChildren().add(emailMeBtn);
-			
-			List<Course> courses = new ArrayList<>();
-			new CourseDaoImpl(courses).loadCourses(PlannerDb.getConnection());
-			List<Event> urgentEvents = courses.stream().map(x -> x.findEarliestAssessment()).collect(Collectors.toList());
-			StringBuilder emailBodyBuilder = new StringBuilder();
-			
-			for (Event urgentEvent : urgentEvents) {
+						
+			for (Event urgentEvent : findUrgentEvents()) {
 				if (urgentEvent != null) {
 					VBox vb = new VBox();
 					vb.setPadding(new Insets(10));
@@ -110,32 +118,15 @@ public class Home {
 										"-fx-border-insets: 5; \n" +
 										"-fx-border-width: 2;"); //$NON-NLS-1$
 					
-					// U+2022 is the Unicode encoding for the bullet point 
-					emailBodyBuilder.append(String.format("\\u2022 %s due in %d \n", eventNameText.getText(), 
-							urgentEvent.findRemainingDays()));
-					
 					homeLayoutBox.getChildren().add(urgentEventPane);
 				}
 			}
-			
-			emailMeBtn.setOnAction(event -> {
-				if (!CommonUtils.isEmptyOrNull(AppSession.getEmailAddress()) && emailManager2.isAuthTokenSet()) {
-					boolean isConfirmed = new ConfirmBox("Send Email?", 
-							"Are you sure you want to send a reminder email to yourself?").display();
-					if (isConfirmed) {
-						String reminderEmailBody = this.formatReminderEmailBody(emailBodyBuilder);
-						emailManager2.sendEmail("**URGENT** Reminder from Planner App", reminderEmailBody);
-					}
-				} else {
-					new EmailRegistrationForm().displayEmailSetUpProcess(emailManager2);
-				}
-			});
 
 			homeLayoutBoxWrapper.getChildren().add(homeLayoutBox);
 			Scene scene = new Scene(homeLayoutBoxWrapper);
 			this.window.setScene(scene);
 			this.window.show();
-		} catch (IOException | SQLException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 			this.window.close();
 		} 

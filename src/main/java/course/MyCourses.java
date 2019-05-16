@@ -11,12 +11,14 @@ import java.util.regex.Pattern;
 
 import application.PlannerDb;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -25,11 +27,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ui.CommonTooltipFactory;
+import ui.CommonUi;
 import ui.MaskedTextField;
 
-// TODO As part of code re-factoring, provide more consistency in how windows are transferred between classes
+// @Service
 public class MyCourses {
 	private static volatile MyCourses myCourses = null;
 	private Stage window;
@@ -91,8 +94,8 @@ public class MyCourses {
 	}
 	
 	
-	/**sortCoursesByAscPriority
-	 * Sort all the courses in this MyCourses object by <strong>DESCENDING</strong> priority 
+	/**
+	 * Sorts all the courses in this MyCourses object by <strong>DESCENDING</strong> priority 
 	 */
 	public void sortCoursesByDescPriority() {
 		this.sortCoursesByDescPriority(0, this.currentCourses.size() - 1);
@@ -178,7 +181,7 @@ public class MyCourses {
 		addCourseBtn.setGraphic(plusImgView);
 		addCourseBtn.setMinWidth(100);
 		addCourseBtn.setMaxWidth(100);
-		addCourseBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Add a course"));
+		addCourseBtn.setTooltip(CommonUi.buildRectToolTip("Add a course"));
 		addCourseBtn.setOnAction(event -> courseForm.display(this));
 		btnTopBarBox.getChildren().add(addCourseBtn);
 		
@@ -191,7 +194,7 @@ public class MyCourses {
 		sortBtn.setGraphic(sortImgView);
 		sortBtn.setMinWidth(100);
 		sortBtn.setMaxWidth(100);
-		sortBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Sort my courses by priority"));
+		sortBtn.setTooltip(CommonUi.buildRectToolTip("Sort my courses by priority"));
 		sortBtn.setOnAction(event -> coursePrioritySelector.displaySelectorScreen(this));		
 		btnTopBarBox.getChildren().add(sortBtn);
 		
@@ -208,7 +211,7 @@ public class MyCourses {
 		workflowBtn.setGraphic(workflowImgView);
 		workflowBtn.setMinWidth(100);
 		workflowBtn.setMaxWidth(100);
-		workflowBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Show the workflow for my ongoing assessments"));
+		workflowBtn.setTooltip(CommonUi.buildRectToolTip("Show the workflow for my ongoing assessments"));
 		workflowBtn.setOnAction(event -> new AssessmentWorkflow(this).display(this.window));		
 		btnTopBarBox.getChildren().add(workflowBtn);
 		
@@ -216,13 +219,13 @@ public class MyCourses {
 	}
 	
 	
-	private StackPane buildCourseInfoPane(Course crsDet) throws SQLException {
-		new AssessmentDaoImpl(crsDet).loadAssessments(PlannerDb.getConnection());
+	private StackPane buildCourseInfoPane(Course course) throws SQLException {
+		new AssessmentDaoImpl(course).loadAssessments(PlannerDb.getConnection());
 
-		MaskedTextField crsText = new MaskedTextField(crsDet.toString(), Font.font("Times New Roman", FontWeight.BOLD, 32));
+		MaskedTextField crsText = new MaskedTextField(course.toString(), Font.font("Times New Roman", FontWeight.BOLD, 32));
 		Consumer<String> onEnterFunc = str -> {
 			try {
-				new CourseDaoImpl(this.currentCourses).editCourseName(PlannerDb.getConnection(), crsDet, str);
+				new CourseDaoImpl(this.currentCourses).editCourseName(PlannerDb.getConnection(), course, str);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -233,8 +236,8 @@ public class MyCourses {
 		Button addAstmtBtn = new Button("Add Astmt");
 		addAstmtBtn.setOnAction(event -> {
 			try {
-				new AssessmentForm().display(this, crsDet);
-				new AssessmentDaoImpl(crsDet).loadAssessments(PlannerDb.getConnection());
+				new AssessmentForm().display(this, course);
+				new AssessmentDaoImpl(course).loadAssessments(PlannerDb.getConnection());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}			
@@ -243,7 +246,7 @@ public class MyCourses {
 		Button deleteCourseBtn = new Button("Remove Course");
 		deleteCourseBtn.setOnAction(event -> {
 			try {
-				new CourseDaoImpl(this.currentCourses).deleteCourse(PlannerDb.getConnection(), crsDet);
+				new CourseDaoImpl(this.currentCourses).deleteCourse(PlannerDb.getConnection(), course);
 				this.display(true);
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -262,7 +265,7 @@ public class MyCourses {
 		vb.setPadding(new Insets(10));
 		vb.setSpacing(10);
 		vb.getChildren().add(hb);
-		crsDet.skinAssessmentPane(vb);
+		this.skinAssessmentPane(vb, course);
 		
 		StackPane coursePane = new StackPane();
 		Rectangle rect = new Rectangle();
@@ -274,5 +277,46 @@ public class MyCourses {
 							"-fx-border-width: 2;"); //$NON-NLS-1$
 		
 		return coursePane;	
+	}
+	
+	
+	public void skinAssessmentPane(VBox vb, Course course) {
+		vb.setPadding(new Insets(15));
+		vb.setAlignment(Pos.CENTER_LEFT);
+		
+		for (Assessment astmt : course.getAssessments()) {
+			GridPane astmtPane = new GridPane();
+			astmtPane.setHgap(30);
+			
+			Text astmtNameText = new Text(String.format("%s (%s)", astmt.getName(), astmt.getClass().getSimpleName()));
+			astmtNameText.setFont(Font.font("Verdana", FontWeight.BOLD, 13));
+			astmtPane.add(astmtNameText, 0, 0); // Set assessment name
+			
+			HBox astmtDetailBox = new HBox();
+			astmtDetailBox.setSpacing(10);
+			Text separatorText = new Text("|");			
+			Text dueText = new Text(astmt.reprDue());
+			Text weightingText = new Text(astmt.reprWeighting());
+			// Text gradeText = new Text(Float.toString(astmt.getGrade()));	
+			astmtDetailBox.getChildren().addAll(dueText, separatorText, weightingText);
+			astmtPane.add(astmtDetailBox, 0, 1);
+
+			Button removeAstmtBtn = new Button("REMOVE");
+			removeAstmtBtn.setVisible(false);
+			removeAstmtBtn.setOnAction(event -> {
+				try {
+					new AssessmentDaoImpl(course).deleteAssessment(PlannerDb.getConnection(), astmt);
+					// astmtDetailBox.getChildren().removeAll(dueText, separatorText, weightingText);
+					vb.getChildren().removeAll(astmtPane);
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			});
+			astmtPane.setOnMouseEntered(event -> removeAstmtBtn.setVisible(true));
+			astmtPane.setOnMouseExited(event -> removeAstmtBtn.setVisible(false));
+			astmtPane.add(removeAstmtBtn, 1, 0);
+
+			vb.getChildren().addAll(astmtPane);
+		}
 	}
 }

@@ -1,13 +1,20 @@
 package home;
 
+import java.sql.SQLException;
+
 import alerts.ConfirmBox;
+import application.EmailManager2;
+import application.PlannerDb;
 import calendar.PlannerCalendar;
 import course.MyCourses;
 import gallery.ImageGallery;
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import properties.Help;
 import properties.MainSettings;
+import user.AppSession;
+import utility.CommonUtils;
 
 public class MenuController {
 	@FXML
@@ -21,6 +28,27 @@ public class MenuController {
 	@FXML
 	public void loadHome() {
 		Home.getInstance().display();
+	}
+	
+	@FXML
+	public void loadEmailForm() {
+		try {
+			EmailManager2 emailManager2 = new EmailManager2();
+			LogInDaoImpl lidi = new LogInDaoImpl();
+			lidi.loadUserEmail(PlannerDb.getConnection());
+			
+			boolean hasEmailRegistered = CommonUtils.isEmptyOrNull(AppSession.getEmailAddress());
+			boolean hasAccessCode = CommonUtils.isEmptyOrNull(lidi.loadGoogleAccessCode(PlannerDb.getConnection()));
+			
+			// It's important that the Boolean expression is ordered this way to exploit short circuit evaluation
+			if (!hasEmailRegistered && (AppSession.getIsTempAccessCode() || !hasAccessCode)) {
+				new EmailForm(emailManager2, new Stage()).displayEmailReqForm(new StringBuilder());
+			} else {
+				new EmailRegistrationForm().displayEmailSetUpProcess(emailManager2);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@FXML
@@ -45,7 +73,7 @@ public class MenuController {
 	
 	@FXML
 	public void loadImageGallery() {
-		new ImageGallery().display();
+		new ImageGallery(Home.getInstance().getWindow()).display();
 	}
 	
 	@FXML

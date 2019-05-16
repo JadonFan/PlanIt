@@ -4,9 +4,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.stereotype.Repository;
+
 import course.Course;
 
-@DaoInterface
+@Repository
 public interface CourseDao {
 	List<Course> getCourses();
 	

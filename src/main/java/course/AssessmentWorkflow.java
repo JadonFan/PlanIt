@@ -24,7 +24,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import ui.CommonTooltipFactory;
+import ui.CommonUi;
 import ui.CoordinatesManager;
 
 public class AssessmentWorkflow extends Graph<Assessment> {
@@ -133,7 +133,7 @@ public class AssessmentWorkflow extends Graph<Assessment> {
 		addAstmtBtn.setGraphic(plusImgView);
 		addAstmtBtn.setMinWidth(100);
 		addAstmtBtn.setMaxWidth(100);
-		addAstmtBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Add an assessment to the workflow"));
+		addAstmtBtn.setTooltip(CommonUi.buildRectToolTip("Add an assessment to the workflow"));
 		// addAstmtBtn.setOnAction(event -> courseForm.display(this));
 		btnTopBarBox.getChildren().add(addAstmtBtn);
 		
@@ -146,7 +146,7 @@ public class AssessmentWorkflow extends Graph<Assessment> {
 		removeAstmtBtn.setGraphic(minusImgView);
 		removeAstmtBtn.setMinWidth(100);
 		removeAstmtBtn.setMaxWidth(100);
-		removeAstmtBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Remove an assessment from the workflow"));
+		removeAstmtBtn.setTooltip(CommonUi.buildRectToolTip("Remove an assessment from the workflow"));
 		// removeAstmtBtn.setOnAction(event -> courseForm.display(this));
 		btnTopBarBox.getChildren().add(removeAstmtBtn);
 	
@@ -163,7 +163,7 @@ public class AssessmentWorkflow extends Graph<Assessment> {
 		coursesBtn.setGraphic(coursesImgView);
 		coursesBtn.setMinWidth(100);
 		coursesBtn.setMaxWidth(100);
-		coursesBtn.setTooltip(CommonTooltipFactory.buildRectToolTip("Show my current courses"));
+		coursesBtn.setTooltip(CommonUi.buildRectToolTip("Show my current courses"));
 		coursesBtn.setOnAction(event -> MyCourses.getInstance().display(true));		
 		btnTopBarBox.getChildren().add(coursesBtn);
 		

@@ -9,6 +9,18 @@ import utility.CommonUtils;
 import utility.DateUtils;
 
 public abstract class Assessment implements Event {
+	public enum Rating {
+		POOR,
+		MARGINAL,
+		AVERAGE,
+		ABOVE_AVERAGE,
+		GREAT,
+		EXCELLENT,
+		PERFECT
+		;
+	}
+
+	
 	private int id;
 	private String name;
 	private int loggedStudyMinutes;

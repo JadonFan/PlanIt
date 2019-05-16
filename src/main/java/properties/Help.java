@@ -16,7 +16,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import ui.CommonButtonFactory;
+import ui.CommonUi;
 import ui.TreeComponentsFactory;
 
 public class Help {
@@ -102,7 +102,7 @@ public class Help {
 				descripLabel.setText(Help.getHelpText(selectResult));
 			});
 		
-		Button backButton = CommonButtonFactory.buildBackToHomeButton();
+		Button backButton = CommonUi.buildBackToHomeButton();
 		
 		BorderPane borderPane = new BorderPane();
 		borderPane.setLeft(this.tree);

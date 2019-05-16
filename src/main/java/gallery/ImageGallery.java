@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import application.PlannerDb;
+import home.Home;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
@@ -20,14 +23,24 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class ImageGallery {
+	private Stage window;
 	private List<ImageView> imageViews;
-	private Stage window = new Stage();
 	
 	
 	public ImageGallery() {
+		this.window = new Stage();
 		this.imageViews = new ArrayList<>();
 	}
 	
+	public ImageGallery(Stage window) {
+		this.window = window;
+		this.imageViews = new ArrayList<>();
+	}
+	
+	
+	public Stage getWindow() {
+		return this.window;
+	}
 	
 	public List<ImageView> getImageViews() {
 		return this.imageViews;
@@ -37,11 +50,7 @@ public class ImageGallery {
 		this.imageViews = imageViews;
 	}
 	
-	public Stage getWindow() {
-		return this.window;
-	}
 
-	
 	public void setExpandOnClick(ImageView iv) {
 		iv.setOnMouseClicked(event -> {
 			iv.setFitHeight(700);
@@ -83,9 +92,17 @@ public class ImageGallery {
 			e.printStackTrace();
 		}
 		
-        VBox galleryLayoutBox = new VBox();
-        galleryLayoutBox.setPadding(new Insets(0, 15, 15, 15));
+        
+		VBox galleryLayoutBox = new VBox();
+		try {
+			Parent menuBar = FXMLLoader.load(Home.class.getResource("/menubar.fxml")); //$NON-NLS-1$
+			galleryLayoutBox.getChildren().add(menuBar);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 		
+		VBox imageContainerBox = new VBox();
+		imageContainerBox.setPadding(new Insets(0, 15, 15, 15));
         Button openButton = new Button("Select Image");
         openButton.setOnAction(event -> {
             File file = new FileChooser().showOpenDialog(this.window);
@@ -109,12 +126,11 @@ public class ImageGallery {
         FlowPane imagePane = new FlowPane(10, 10);
         imagePane.getChildren().addAll(this.imageViews);
         
-        galleryLayoutBox.getChildren().addAll(btnBox, imagePane);
+        imageContainerBox.getChildren().addAll(btnBox, imagePane);
+        galleryLayoutBox.getChildren().add(imageContainerBox);
         
-        // TODO code refactoring : move scene to the top of the method (same for all the classes)
 	    Scene scene = new Scene(galleryLayoutBox, 500, 500);
 	    this.window.setScene(scene);
-	    this.window.setOnCloseRequest(null);
 	    this.window.show();	
 	}
 }
