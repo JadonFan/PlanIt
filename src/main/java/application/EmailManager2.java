@@ -136,7 +136,7 @@ public final class EmailManager2 {
 				add(new BasicNameValuePair("client_id", "1036300734576-3llrcq340gtqre8fg083pchqh8lk1qnn.apps."
 						+ "googleusercontent.com")); //NON-NLS-1$ //NON-NLS-2$
 				// TODO store client secret in the database
-				add(new BasicNameValuePair("client_secret", "IXbEmcor9uQi1-mn9oMNtk7L")); //NON-NLS-1$ //NON-NLS-2$
+				add(new BasicNameValuePair("client_secret", "")); //NON-NLS-1$ //NON-NLS-2$
 				add(new BasicNameValuePair("redirect_uri", "urn:ietf:wg:oauth:2.0:oob")); //NON-NLS-1$ //NON-NLS-2$
 				// add(new BasicNameValuePair("scope", ""));
 				add(new BasicNameValuePair("grant_type", "authorization_code")); //NON-NLS-1$ //NON-NLS-2$
